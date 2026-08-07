@@ -1,11 +1,11 @@
 {
-    "name": "cs_elective_2",
-    "short_name": "cs_elective_2",
+    "name": "Netflix Flutter UI",
+    "short_name": "Netflix",
     "start_url": ".",
     "display": "standalone",
-    "background_color": "#0175C2",
-    "theme_color": "#0175C2",
-    "description": "A new Flutter project.",
+    "background_color": "#0B0A0E",
+    "theme_color": "#E50914",
+    "description": "A static Netflix-inspired Flutter UI featuring LeBron James.",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [

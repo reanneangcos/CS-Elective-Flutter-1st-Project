@@ -57,7 +57,7 @@ flutter:
   uses-material-design: true
 
   assets:
-    - assets/images/spacebound_hero.png
+    - assets/images/lebron_dunk.jpg
 
   # To add assets to your application, add an assets section, like this:
   # An image asset can refer to one or more resolution-specific "variants", see

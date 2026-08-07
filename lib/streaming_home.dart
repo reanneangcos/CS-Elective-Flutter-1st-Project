@@ -2,8 +2,8 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 
-class StreamingHomeScreen extends StatelessWidget {
-  const StreamingHomeScreen({super.key});
+class NetflixHomeScreen extends StatelessWidget {
+  const NetflixHomeScreen({super.key});
 
   static const background = Color(0xFF0B0A0E);
 
@@ -58,7 +58,7 @@ class _HeroBanner extends StatelessWidget {
         fit: StackFit.expand,
         children: [
           Image.asset(
-            'assets/images/spacebound_hero.png',
+            'assets/images/lebron_dunk.jpg',
             fit: BoxFit.cover,
             alignment: const Alignment(0, -0.18),
           ),
@@ -72,7 +72,7 @@ class _HeroBanner extends StatelessWidget {
                   Color(0x18000000),
                   Color(0x08000000),
                   Color(0xD90B0A0E),
-                  StreamingHomeScreen.background,
+                  NetflixHomeScreen.background,
                 ],
                 stops: [0, 0.2, 0.5, 0.84, 1],
               ),
@@ -155,7 +155,7 @@ class _CategoryChip extends StatelessWidget {
       height: 38,
       padding: const EdgeInsets.symmetric(horizontal: 15),
       decoration: BoxDecoration(
-        color: const Color(0xFF81543D).withValues(alpha: 0.88),
+        color: const Color(0xFF3A3739).withValues(alpha: 0.9),
         borderRadius: BorderRadius.circular(22),
         border: Border.all(color: Colors.white.withValues(alpha: 0.08)),
       ),
@@ -185,7 +185,7 @@ class _HeroDetails extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const Text(
-          'SPACEBOUND',
+          'KING JAMES',
           style: TextStyle(
             fontSize: 36,
             fontWeight: FontWeight.w300,
@@ -195,7 +195,7 @@ class _HeroDetails extends StatelessWidget {
         ),
         const SizedBox(height: 9),
         Text(
-          'Science fiction  •  Adventure  •  Drama',
+          'Documentary  •  Sports  •  Biography',
           style: TextStyle(
             color: Colors.white.withValues(alpha: 0.66),
             fontSize: 13,
@@ -204,7 +204,7 @@ class _HeroDetails extends StatelessWidget {
         const SizedBox(height: 14),
         const Row(
           children: [
-            _StreamBoxMark(),
+            _NetflixMark(),
             Spacer(),
             _AddButton(),
             SizedBox(width: 10),
@@ -216,8 +216,8 @@ class _HeroDetails extends StatelessWidget {
   }
 }
 
-class _StreamBoxMark extends StatelessWidget {
-  const _StreamBoxMark();
+class _NetflixMark extends StatelessWidget {
+  const _NetflixMark();
 
   @override
   Widget build(BuildContext context) {
@@ -225,7 +225,7 @@ class _StreamBoxMark extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         Text(
-          'S',
+          'N',
           style: TextStyle(
             color: Color(0xFFFF3D32),
             fontSize: 21,
@@ -234,7 +234,7 @@ class _StreamBoxMark extends StatelessWidget {
         ),
         SizedBox(width: 5),
         Text(
-          'STREAMBOX',
+          'DOCUMENTARY',
           style: TextStyle(
             fontSize: 10,
             fontWeight: FontWeight.w700,
@@ -322,24 +322,24 @@ class _MyListSection extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 18),
             children: const [
               _MovieCard(
-                title: 'Silent Orbit',
-                subtitle: 'New Episode',
-                colors: [Color(0xFF44566F), Color(0xFFE1C9B1)],
-                icon: Icons.public_rounded,
+                title: 'The Chosen One',
+                subtitle: 'New Release',
+                colors: [Color(0xFF3A0C0F), Color(0xFFE50914)],
+                icon: Icons.sports_basketball_rounded,
               ),
               SizedBox(width: 10),
               _MovieCard(
-                title: 'Red Horizon',
+                title: 'Court Kings',
                 subtitle: 'Top 10',
-                colors: [Color(0xFF651D16), Color(0xFFFF8A1D)],
-                icon: Icons.local_fire_department_rounded,
+                colors: [Color(0xFF39260E), Color(0xFFD8A832)],
+                icon: Icons.emoji_events_rounded,
               ),
               SizedBox(width: 10),
               _MovieCard(
-                title: 'Deep Signal',
+                title: 'Legacy 23',
                 subtitle: 'Recently Added',
-                colors: [Color(0xFF112A33), Color(0xFF2E8B8D)],
-                icon: Icons.graphic_eq_rounded,
+                colors: [Color(0xFF121212), Color(0xFF525252)],
+                icon: Icons.stadium_rounded,
               ),
             ],
           ),
