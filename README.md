@@ -1,16 +1,25 @@
-# cs_elective_2
+# StreamBox Static UI
 
-A new Flutter project.
+A responsive Flutter recreation of a modern streaming home screen for CS
+Elective 2. The interface is built with basic Flutter widgets such as
+`Container`, `Row`, `Column`, `Text`, `Icon`, `Stack`, `ListView`, and
+`Expanded`.
 
-## Getting Started
+The featured artwork is an original project asset created for this interface.
 
-This project is a starting point for a Flutter application.
+## Run the app
 
-A few resources to get you started if this is your first Flutter project:
+```bash
+flutter pub get
+flutter run
+```
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+Choose an Android emulator, a connected Android device, or Chrome when Flutter
+prompts for a target.
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## Verify the project
+
+```bash
+flutter analyze
+flutter test
+```
