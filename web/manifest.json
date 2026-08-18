@@ -1,6 +1,6 @@
 {
-    "name": "cs_elective_2",
-    "short_name": "cs_elective_2",
+    "name": "nestedscenario",
+    "short_name": "nestedscenario",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",

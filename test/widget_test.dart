@@ -1,21 +1,23 @@
-import 'package:cs_elective_2/main.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:nestedscenario/main.dart';
 
 void main() {
-  testWidgets('renders the StreamBox home screen', (tester) async {
-    tester.view.physicalSize = const Size(390, 844);
-    tester.view.devicePixelRatio = 1;
-    addTearDown(tester.view.resetPhysicalSize);
-    addTearDown(tester.view.resetDevicePixelRatio);
+  testWidgets('opens the corresponding fruit route', (tester) async {
+    router.go('/');
+    await tester.pumpWidget(const FruitApp());
+    await tester.pumpAndSettle();
 
-    await tester.pumpWidget(const StreamBoxApp());
+    expect(find.text('Fruit Basket'), findsOneWidget);
+    expect(find.text('Apple'), findsOneWidget);
 
-    expect(find.text('For Reanne'), findsOneWidget);
-    expect(find.text('SPACEBOUND'), findsOneWidget);
-    expect(find.text('My List'), findsOneWidget);
-    expect(find.text('Play'), findsOneWidget);
-    expect(find.byIcon(Icons.home_rounded), findsOneWidget);
-    expect(tester.takeException(), isNull);
+    await tester.tap(find.text('Apple'));
+    await tester.pumpAndSettle();
+
+    expect(router.routeInformationProvider.value.uri.path, '/fruit/apple');
+    expect(find.text('🍎'), findsOneWidget);
+    expect(
+      find.text('Crisp, sweet, and perfect for an afternoon snack.'),
+      findsOneWidget,
+    );
   });
 }

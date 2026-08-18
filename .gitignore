@@ -32,7 +32,6 @@ migrate_working_dir/
 .pub/
 /build/
 /coverage/
-/test/goldens/instagram_feed.png
 
 # Symbolication related
 app.*.symbols

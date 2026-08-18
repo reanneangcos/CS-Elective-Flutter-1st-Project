@@ -1,4 +1,4 @@
-package com.example.cs_elective_2
+package com.example.nestedscenario
 
 import io.flutter.embedding.android.FlutterActivity
 
