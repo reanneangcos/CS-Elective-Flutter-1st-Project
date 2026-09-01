@@ -1,11 +1,27 @@
-# Netflix Static Flutter UI
+# Responsive and Adaptive Lumen Streaming Dashboard
 
-A responsive recreation of a popular Netflix mobile home screen for CS
-Elective 2. The featured documentary, **King James**, highlights LeBron James.
+Lumen is an original single-screen Flutter streaming dashboard created to
+demonstrate responsive layouts and platform-adaptive controls. Its featured
+science-fiction drama, **Afterlight**, uses original cinematic artwork.
 
-The screen is intentionally static and applies the required basic Flutter
-widgets, including `Container`, `Row`, `Column`, `Text`, `Icon`, `Stack`,
-`ListView`, and `Expanded`.
+## Responsive behavior
+
+The screen uses `LayoutBuilder` and the available width rather than a device
+name:
+
+- **Mobile (under 700 px, plus short landscape windows):** stacked, scrollable
+  content and bottom navigation.
+- **Tablet (700–1149 px):** compact navigation rail and wider content cards.
+- **Desktop/web (1150 px and above):** compact sidebar and a two-column
+  dashboard. Mouse cursors and tooltips make controls web-friendly.
+
+## Adaptive behavior
+
+- **iOS:** `CupertinoApp`, `CupertinoPageScaffold`, `CupertinoButton`,
+  Cupertino icons, and `CupertinoTabBar`.
+- **Android:** Material 3 app, buttons, icons, and `NavigationBar`.
+- **Web/desktop:** Material controls with a persistent `NavigationRail`, an
+  expanded rail on wide screens, and pointer-friendly interactions.
 
 ## Run the app
 
@@ -24,14 +40,7 @@ flutter analyze
 flutter test
 ```
 
-## Image attribution
+## Artwork
 
-Featured photograph: [LeBronJamesDunkingHeat.jpg](https://commons.wikimedia.org/wiki/File:LeBronJamesDunkingHeat.jpg)
-by Keith Allison, licensed under
-[CC BY-SA 2.0](https://creativecommons.org/licenses/by-sa/2.0/), via Wikimedia
-Commons. The photograph is cropped and displayed beneath gradient overlays by
-the Flutter interface.
-
-Netflix is a trademark of Netflix, Inc. This educational interface is an
-unofficial classroom recreation and is not affiliated with or endorsed by
-Netflix, LeBron James, the NBA, or any basketball team.
+The `Afterlight` hero artwork was generated specifically for this educational
+project. Lumen and all titles shown in the interface are fictional.
