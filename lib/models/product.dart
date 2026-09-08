@@ -17,7 +17,7 @@ class Product {
     required this.releaseLabel,
   });
 
-  final String id; // Stable key used by routes and the cart map.
+  final String id; // Visible SKU-style key, e.g. SS-P001, used by routes/cart.
   final String name;
   final String colorway;
   final String category;

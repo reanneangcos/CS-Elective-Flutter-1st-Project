@@ -24,7 +24,7 @@ class ProductDetailScreen extends StatefulWidget {
 
 class _ProductDetailScreenState extends State<ProductDetailScreen> {
   late int _selectedSize;
-  bool _added = false;
+  int? _lastAddedSize;
 
   @override
   void initState() {
@@ -34,8 +34,8 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
 
   void _addToCart() {
     // Updating the shared controller also updates the badge, cart, and total.
-    widget.cartController.add(widget.product);
-    setState(() => _added = true);
+    widget.cartController.add(widget.product, _selectedSize);
+    setState(() => _lastAddedSize = _selectedSize);
     ScaffoldMessenger.of(context)
       ..hideCurrentSnackBar()
       ..showSnackBar(
@@ -78,7 +78,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                             child: _ProductInformation(
                               product: widget.product,
                               selectedSize: _selectedSize,
-                              added: _added,
+                              lastAddedSize: _lastAddedSize,
                               onSizeSelected: (size) =>
                                   setState(() => _selectedSize = size),
                               onAdd: _addToCart,
@@ -109,7 +109,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                 _ProductInformation(
                   product: widget.product,
                   selectedSize: _selectedSize,
-                  added: _added,
+                  lastAddedSize: _lastAddedSize,
                   onSizeSelected: (size) =>
                       setState(() => _selectedSize = size),
                   onAdd: _addToCart,
@@ -158,14 +158,14 @@ class _ProductInformation extends StatelessWidget {
   const _ProductInformation({
     required this.product,
     required this.selectedSize,
-    required this.added,
+    required this.lastAddedSize,
     required this.onSizeSelected,
     required this.onAdd,
   });
 
   final Product product;
   final int selectedSize;
-  final bool added;
+  final int? lastAddedSize;
   final ValueChanged<int> onSizeSelected;
   final VoidCallback onAdd;
 
@@ -181,6 +181,12 @@ class _ProductInformation extends StatelessWidget {
       children: [
         Text(
           '${product.releaseLabel} · ${product.category}'.toUpperCase(),
+          style: text.labelSmall?.copyWith(color: colors.onSurfaceVariant),
+        ),
+        const SizedBox(height: 5),
+        Text(
+          'PRODUCT ID: ${product.id}',
+          key: const Key('product-id'),
           style: text.labelSmall?.copyWith(color: colors.onSurfaceVariant),
         ),
         const SizedBox(height: 12),
@@ -221,11 +227,25 @@ class _ProductInformation extends StatelessWidget {
           width: double.infinity,
           child: FilledButton.icon(
             key: const Key('add-to-cart'),
-            onPressed: added ? () => context.push('/cart') : onAdd,
-            icon: Icon(added ? Icons.shopping_bag_outlined : Icons.add_rounded),
-            label: Text(added ? 'VIEW CART' : 'ADD TO CART'),
+            // The action stays available after an addition so the shopper can
+            // select another size of the same product and add a separate line.
+            onPressed: onAdd,
+            icon: const Icon(Icons.add_rounded),
+            label: const Text('ADD TO CART'),
           ),
         ),
+        if (lastAddedSize != null) ...[
+          const SizedBox(height: 10),
+          SizedBox(
+            width: double.infinity,
+            child: OutlinedButton.icon(
+              key: const Key('view-cart'),
+              onPressed: () => context.push('/cart'),
+              icon: const Icon(Icons.shopping_bag_outlined),
+              label: Text('VIEW CART · SIZE $lastAddedSize ADDED'),
+            ),
+          ),
+        ],
         const SizedBox(height: 16),
         Row(
           crossAxisAlignment: CrossAxisAlignment.start,

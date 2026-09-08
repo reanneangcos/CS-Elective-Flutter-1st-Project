@@ -26,9 +26,9 @@ void main() {
     await tester.pumpAndSettle();
     await tester.tap(find.byKey(const Key('add-to-cart')));
     await tester.pumpAndSettle();
-    expect(find.text('VIEW CART'), findsOneWidget);
+    expect(find.textContaining('SIZE 7 ADDED'), findsOneWidget);
 
-    await tester.tap(find.byKey(const Key('add-to-cart')));
+    await tester.tap(find.byKey(const Key('view-cart')));
     await tester.pumpAndSettle();
     expect(find.text('YOUR CART'), findsOneWidget);
 
@@ -39,6 +39,7 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('ORDER CONFIRMED'), findsOneWidget);
     expect(find.byKey(const Key('confirmation-total')), findsOneWidget);
+    expect(find.textContaining('ORDER ID: SS-O-'), findsOneWidget);
   });
 
   testWidgets('catalog filters, search, and sorting are functional', (
@@ -117,7 +118,7 @@ void main() {
     await tester.pumpAndSettle();
     await tester.tap(find.byKey(const Key('add-to-cart')));
     await tester.pumpAndSettle();
-    await tester.tap(find.byKey(const Key('add-to-cart')));
+    await tester.tap(find.byKey(const Key('view-cart')));
     await tester.pumpAndSettle();
     expect(find.byKey(const Key('cart-scroll')), findsOneWidget);
     expect(tester.takeException(), isNull);
@@ -149,6 +150,40 @@ void main() {
       selectedChip.labelStyle?.color,
       AppTheme.dark.colorScheme.onSecondary,
     );
+  });
+
+  testWidgets('same product in different sizes creates separate cart lines', (
+    tester,
+  ) async {
+    await tester.binding.setSurfaceSize(const Size(430, 900));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+
+    await tester.pumpWidget(const SoleSelectApp());
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('Strata One'));
+    await tester.pumpAndSettle();
+    expect(find.text('PRODUCT ID: SS-P001'), findsOneWidget);
+
+    await tester.ensureVisible(find.byKey(const Key('add-to-cart')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('add-to-cart'))); // Size 7.
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.widgetWithText(ChoiceChip, '8'));
+    await tester.pumpAndSettle();
+    await tester.ensureVisible(find.byKey(const Key('add-to-cart')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('add-to-cart'))); // Size 8.
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.byKey(const Key('view-cart')));
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(const Key('cart-line-SS-P001-US7')), findsOneWidget);
+    expect(find.byKey(const Key('cart-line-SS-P001-US8')), findsOneWidget);
+    expect(find.text('SS-P001 · SIZE US 7'), findsOneWidget);
+    expect(find.text('SS-P001 · SIZE US 8'), findsOneWidget);
   });
 
   testWidgets('checkout redirects to cart when the cart is empty', (

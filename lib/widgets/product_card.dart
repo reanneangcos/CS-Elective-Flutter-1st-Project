@@ -77,7 +77,7 @@ class ProductCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    product.category.toUpperCase(),
+                    '${product.category.toUpperCase()} · ${product.id}',
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: text.labelSmall?.copyWith(

@@ -6,7 +6,7 @@ import '../models/product.dart';
 /// objects each time the UI refreshes.
 const products = <Product>[
   Product(
-    id: 'strata-one',
+    id: 'SS-P001',
     name: 'Strata One',
     colorway: 'Chalk / Sand',
     category: 'Lifestyle',
@@ -22,7 +22,7 @@ const products = <Product>[
     releaseLabel: 'Just dropped',
   ),
   Product(
-    id: 'flux-runner',
+    id: 'SS-P002',
     name: 'Flux Runner',
     colorway: 'Graphite / Voltage',
     category: 'Performance',
@@ -38,7 +38,7 @@ const products = <Product>[
     releaseLabel: 'Most wanted',
   ),
   Product(
-    id: 'court-88',
+    id: 'SS-P003',
     name: 'Court 88',
     colorway: 'Cobalt / Cream',
     category: 'Court',
@@ -54,7 +54,7 @@ const products = <Product>[
     releaseLabel: 'New in',
   ),
   Product(
-    id: 'ridge-form',
+    id: 'SS-P004',
     name: 'Ridge Form',
     colorway: 'Clay / Espresso',
     category: 'Trail',
@@ -70,7 +70,7 @@ const products = <Product>[
     releaseLabel: 'Select edition',
   ),
   Product(
-    id: 'aero-knit',
+    id: 'SS-P005',
     name: 'Aero Knit',
     colorway: 'Silver / Ice',
     category: 'Performance',
@@ -86,7 +86,7 @@ const products = <Product>[
     releaseLabel: 'Fresh arrival',
   ),
   Product(
-    id: 'mono-high',
+    id: 'SS-P006',
     name: 'Mono High',
     colorway: 'Black / Vintage',
     category: 'Lifestyle',
@@ -102,7 +102,7 @@ const products = <Product>[
     releaseLabel: 'Archive update',
   ),
   Product(
-    id: 'dune-trek',
+    id: 'SS-P007',
     name: 'Dune Trek',
     colorway: 'Sand / Deep Teal',
     category: 'Trail',
@@ -118,7 +118,7 @@ const products = <Product>[
     releaseLabel: 'Trail pick',
   ),
   Product(
-    id: 'harbor-court',
+    id: 'SS-P008',
     name: 'Harbor Court',
     colorway: 'Sage / Cream',
     category: 'Court',

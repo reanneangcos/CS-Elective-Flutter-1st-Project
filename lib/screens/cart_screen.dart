@@ -65,9 +65,9 @@ class _CartScreenState extends State<CartScreen> {
                     final item = cart.items[index];
                     return _CartLine(
                       item: item,
-                      onIncrease: () => cart.increment(item.product.id),
-                      onDecrease: () => cart.decrement(item.product.id),
-                      onRemove: () => cart.remove(item.product.id),
+                      onIncrease: () => cart.increment(item.lineId),
+                      onDecrease: () => cart.decrement(item.lineId),
+                      onRemove: () => cart.remove(item.lineId),
                     );
                   }
 
@@ -163,6 +163,7 @@ class _CartLine extends StatelessWidget {
     final colors = Theme.of(context).colorScheme;
 
     return Card(
+      key: Key('cart-line-${item.lineId}'),
       child: LayoutBuilder(
         builder: (context, constraints) {
           // The line's own available width decides whether controls sit beside
@@ -174,6 +175,13 @@ class _CartLine extends StatelessWidget {
               Text(item.product.name, style: text.titleMedium),
               const SizedBox(height: 3),
               Text(
+                '${item.product.id} · SIZE US ${item.size}',
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: text.bodySmall?.copyWith(color: colors.onSurfaceVariant),
+              ),
+              const SizedBox(height: 2),
+              Text(
                 item.product.colorway,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
@@ -182,7 +190,7 @@ class _CartLine extends StatelessWidget {
               const SizedBox(height: 10),
               Text(
                 formatPeso(item.subtotal),
-                key: Key('subtotal-${item.product.id}'),
+                key: Key('subtotal-${item.lineId}'),
                 style: text.labelLarge,
               ),
             ],
@@ -199,7 +207,7 @@ class _CartLine extends StatelessWidget {
                 width: 42,
                 child: Text(
                   item.quantity.toString(),
-                  key: Key('quantity-${item.product.id}'),
+                  key: Key('quantity-${item.lineId}'),
                   textAlign: TextAlign.center,
                   style: text.titleMedium,
                 ),
@@ -340,7 +348,10 @@ class _CartSummary extends StatelessWidget {
               width: double.infinity,
               child: FilledButton(
                 key: const Key('checkout-button'),
-                onPressed: () => context.go('/checkout'),
+                onPressed: () {
+                  final orderId = cart.beginCheckout();
+                  context.go('/checkout/$orderId');
+                },
                 child: const Text('CHECKOUT'),
               ),
             ),

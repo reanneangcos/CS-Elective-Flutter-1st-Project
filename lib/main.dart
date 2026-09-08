@@ -78,11 +78,25 @@ class _SoleSelectAppState extends State<SoleSelectApp> {
         ),
         GoRoute(
           path: '/checkout',
-          // Checkout must only be reachable when at least one item exists.
-          redirect: (context, state) =>
-              _cartController.isEmpty ? '/cart' : null,
-          builder: (context, state) =>
-              CheckoutScreen(cartController: _cartController),
+          // A valid cart receives a generated, stable order-specific route.
+          redirect: (context, state) => _cartController.isEmpty
+              ? '/cart'
+              : '/checkout/${_cartController.beginCheckout()}',
+        ),
+        GoRoute(
+          path: '/checkout/:orderId',
+          // Reject empty carts and stale or invented order identifiers.
+          redirect: (context, state) {
+            if (_cartController.isEmpty) return '/cart';
+            final activeOrderId = _cartController.beginCheckout();
+            return state.pathParameters['orderId'] == activeOrderId
+                ? null
+                : '/checkout/$activeOrderId';
+          },
+          builder: (context, state) => CheckoutScreen(
+            cartController: _cartController,
+            orderId: state.pathParameters['orderId']!,
+          ),
         ),
       ],
       errorBuilder: (context, state) => const _NotFoundScreen(),

@@ -4,7 +4,7 @@
 
 **Recommended branch:** `PrelimExam`
 
-**Required user flow:** Catalog → Product Detail → Add to Cart → Cart → Checkout Confirmation
+**Required user flow:** Catalog → Product Detail → Select Size → Add to Cart → Cart → Checkout Confirmation
 
 This script is written to be spoken while navigating the app. Text inside quotation marks is the suggested narration. Notes under **Explain** are supporting details you can use if the instructor asks questions.
 
@@ -37,7 +37,7 @@ SOLE/SELECT is an original, product-first sneaker catalog. It is not presented a
 **Explain:**
 
 - The app opens directly to the catalog because the rubric defines the Home Screen as the product grid. A separate hero or splash page would delay the required task.
-- The app is a focused shopping prototype: its strongest path is browsing, inspecting, adding, updating quantity, and reviewing the order.
+- The app is a focused shopping prototype: its strongest path is browsing, inspecting, selecting a size, adding, updating quantity, and reviewing a traceable order.
 - The exact routes and root app configuration are in [`lib/main.dart`](lib/main.dart).
 
 **Rubric proof:** Required four-screen shopping flow, Navigation 2.0, light/dark themes, and responsive layouts.
@@ -75,7 +75,7 @@ SOLE/SELECT is an original, product-first sneaker catalog. It is not presented a
 
 **Say:**
 
-> “Each grid item is a reusable `ProductCard`. It contains the required `Card`, `Image`, and `Text` widgets. The image receives the largest area, followed by the product name, colorway, and price. That order supports quick scanning: shoppers first recognize the product, then identify it, and finally compare its price.”
+> “Each grid item is a reusable `ProductCard`. It contains the required `Card`, `Image`, and `Text` widgets. The image receives the largest area, followed by the product name, colorway, and price. Every card also displays a specific catalog ID from `SS-P001` through `SS-P008`. That order supports quick scanning while the ID gives the product a stable identity across the catalog, route, cart, and checkout.”
 
 > “The card is a `StatelessWidget` because it only renders the `Product` passed into it. It does not own changing data. The whole card is tappable through `InkWell`, and the image includes a semantic label.”
 
@@ -141,13 +141,13 @@ SOLE/SELECT is an original, product-first sneaker catalog. It is not presented a
 
 ## 6. Product detail and Navigation 2.0 — 1 minute
 
-**Action:** Tap **Strata One**. Point to the URL/route if it is visible, the image, name, price, description, product facts, size choices, and Add to Cart button.
+**Action:** Tap **Strata One**. Point out `PRODUCT ID: SS-P001`, the `/product/SS-P001` route if visible, the image, price, description, size choices, and Add to Cart button.
 
 **Say:**
 
-> “Tapping a card calls `context.push` with `/product/` followed by the product ID. `go_router` reads that path parameter, finds the matching model, and builds the detail screen. This is declarative Navigation 2.0, configured once through `MaterialApp.router`. Each product therefore has a meaningful route instead of depending only on a temporary pushed widget.”
+> “Tapping a card calls `context.push` with `/product/` followed by its specific ID. Strata One is `SS-P001`, so its route is `/product/SS-P001`. `go_router` reads that path parameter, finds the matching model, and builds the detail screen. This is declarative Navigation 2.0, configured once through `MaterialApp.router`. The same ID is shown in every later stage so the user can trace which product is being ordered.”
 
-> “The detail page prominently displays the required image and price, with supporting name, description, facts, and size controls. On a phone, the image and information stack vertically. At 760 pixels and above, a `LayoutBuilder` places them side by side in a `Row`. The selected shoe size and the temporary Added state are local interactions, so this screen is stateful.”
+> “The detail page prominently displays the required image and price, with supporting name, product ID, description, facts, and size controls. On a phone, the image and information stack vertically. At 760 pixels and above, a `LayoutBuilder` places them side by side in a `Row`. The selected shoe size and last-added feedback are local interactions, so this screen is stateful.”
 
 **Explain:**
 
@@ -163,40 +163,44 @@ SOLE/SELECT is an original, product-first sneaker catalog. It is not presented a
 
 ---
 
-## 7. Add to Cart and shared state — 45 seconds
+## 7. Size-aware Add to Cart and shared state — 1 minute
 
-**Action:** Choose a size, press **ADD TO CART**, and point out the feedback and app-bar cart badge. Then press the cart icon.
+**Action:** Keep Strata One on size 7 and press **ADD TO CART**. Then select size 8 and press **ADD TO CART** again. Point out that the Add button remains available and the badge becomes 2. Press the new **VIEW CART · SIZE 8 ADDED** button.
 
 **Say:**
 
-> “When I press Add to Cart, the screen calls the shared `CartController`. If the product is new, the controller creates a cart line with quantity one; if it already exists, it increments that line. It then calls `notifyListeners`, causing listening widgets such as the cart badge and cart screen to rebuild.”
+> “A cart line is identified by both product ID and selected size. The first addition creates `SS-P001-US7`. When I select size 8, the second addition creates the separate line `SS-P001-US8`; it does not incorrectly merge two different sizes. If I add size 8 again, only the `SS-P001-US8` quantity increases.”
 
-> “The cart is created once in the root app and passed to every route, so all screens observe one source of truth. This is lifted application state. The small size-selection and button-feedback values remain local to the detail page.”
+> “The primary Add to Cart button stays enabled after every addition, which lets the shopper choose another size of the same shoe. A separate View Cart button appears for navigation. The shared controller then calls `notifyListeners`, updating the badge and cart. The controller is created once at the app root, so every route observes one source of truth.”
 
 **Explain:**
 
 - `ChangeNotifier` implements the observer pattern: mutations happen in one class, followed by `notifyListeners()`.
+- `CartController.lineIdFor(product, size)` creates the composite cart-line ID, such as `SS-P001-US7`.
+- `add(product, size)` validates that the requested size exists in the product's available-size list.
+- Same product + same size increments quantity; same product + different size creates a separate line.
 - Keeping totals and cart mutations in the controller prevents duplicate calculation logic in screens.
 - Flutter's simple state-management guide describes lifting shared state above the widgets that use it and demonstrates `ChangeNotifier` with catalog/cart-style app state. See [Flutter: Simple app state management][F6].
 
 **Code to show:** [`lib/state/cart_controller.dart`](lib/state/cart_controller.dart), [`lib/widgets/shop_app_bar.dart`](lib/widgets/shop_app_bar.dart), and the Add to Cart handler in [`lib/screens/product_detail_screen.dart`](lib/screens/product_detail_screen.dart).
 
-**Rubric proof:** Add to Cart action, shared interactive state, and visible cart feedback.
+**Rubric proof:** Add to Cart action, size selection, correct item identity, shared interactive state, and visible cart feedback.
 
 ---
 
 ## 8. Cart quantities, subtotals, and total — 1 minute
 
-**Action:** On Cart, point out the image, name, colorway, subtotal, quantity controls, and order summary. Press `+`, describe the changed values, then press `−` once.
+**Action:** On Cart, point to the separate `SS-P001 · SIZE US 7` and `SS-P001 · SIZE US 8` lines. Press `+` on only size 8, describe the changed values, then press `−` once.
 
 **Say:**
 
-> “The Cart Screen shows each cart item with its product information, quantity controls, and subtotal. A line subtotal is product price multiplied by quantity. The controller calculates the running total by adding all line subtotals. When I press plus or minus, the controller updates the model and notifies the screen, so the quantity, subtotal, badge, item count, and total stay synchronized.”
+> “The Cart Screen shows the visible product ID and selected size on every line. Although both lines are Strata One, size 7 and size 8 remain independent. A line subtotal is product price multiplied by that line's quantity. When I change size 8, only `SS-P001-US8` changes; size 7 is unaffected. The running total still adds every line subtotal.”
 
 > “Decreasing a quantity of one removes the line rather than allowing zero or negative quantities. The close icon also removes the item. On a phone, the lines and summary form one vertical scroll view. At 900 pixels and above, the list and summary sit side by side.”
 
 **Explain:**
 
+- `CartItem` stores the immutable product, selected size, and quantity. Its `lineId` combines product ID and size.
 - `CartItem.subtotal` owns the line formula: `product.price * quantity`.
 - `CartController.total` uses `fold` to sum every subtotal.
 - The screen subscribes in `initState`, handles controller replacement in `didUpdateWidget`, and removes its listener in `dispose`.
@@ -204,22 +208,24 @@ SOLE/SELECT is an original, product-first sneaker catalog. It is not presented a
 
 **Code to show:** [`lib/models/cart_item.dart`](lib/models/cart_item.dart), [`lib/state/cart_controller.dart`](lib/state/cart_controller.dart), and [`lib/screens/cart_screen.dart`](lib/screens/cart_screen.dart).
 
-**Rubric proof:** Cart items, `+`/`−` quantity controls, per-item subtotal, running total, responsive cart, `Scaffold`, and `AppBar`.
+**Rubric proof:** Cart items, independent size variants, `+`/`−` quantity controls, per-item subtotal, running total, responsive cart, `Scaffold`, and `AppBar`.
 
 ---
 
 ## 9. Checkout confirmation and route guard — 45 seconds
 
-**Action:** Press **CHECKOUT**. Point to the item summary, each subtotal, final total, and confirmation message.
+**Action:** Press **CHECKOUT**. Point to the generated order ID, the product IDs and sizes, each subtotal, final total, and confirmation message. If visible, show that the route also contains the same order ID.
 
 **Say:**
 
-> “Checkout is a final read-only confirmation screen. It repeats the cart items, their quantities and subtotals, and the final total, followed by a clear confirmation message. It is a `StatelessWidget` because it presents the current controller data but does not own an editing interaction.”
+> “Checkout is a final read-only confirmation screen. It repeats each product ID, selected size, quantity, subtotal, and the final total. When checkout begins, the controller generates a specific order ID in the format `SS-O-date-time-sequence`, for example `SS-O-20260908-143025-01`. That exact ID appears both on screen and in the checkout route, so the confirmation has a traceable identity.”
 
-> “The `/checkout` route also has a guard. If the cart is empty, `go_router` redirects to `/cart`. This enforces the rubric rule that checkout should only be accessible when there is at least one cart item, even if somebody tries to enter the URL directly.”
+> “The order ID remains stable while the cart is unchanged. Editing the cart invalidates it so the revised order receives a new ID. The `/checkout/:orderId` route rejects an empty cart and also replaces a stale or invented ID with the active one. This enforces the rubric rule that checkout is only accessible with cart items and keeps the route consistent with the confirmation.”
 
 **Explain:**
 
+- `beginCheckout()` creates one ID for the current cart snapshot and returns the same ID on repeated calls.
+- Product IDs use the fixed `SS-P001`–`SS-P008` catalog scheme. Order IDs use `SS-O-YYYYMMDD-HHMMSS-NN`.
 - The controller is a `refreshListenable` for the router, so route redirects are re-evaluated when cart state changes.
 - `LayoutBuilder` also adapts each purchase line to narrow widths.
 - Currency output is centralized in one helper so every screen uses the same peso format.
@@ -234,7 +240,7 @@ SOLE/SELECT is an original, product-first sneaker catalog. It is not presented a
 
 **Say:**
 
-> “To summarize, SOLE/SELECT completes the required user journey using a two-column mobile catalog and three-or-more-column tablet catalog, responsive detail and cart layouts, reusable Material components, centralized light and dark themes, stateful widgets only where interaction requires local rebuilding, stateless presentation widgets elsewhere, a shared `ChangeNotifier` cart, and `go_router` Navigation 2.0 throughout. The interface decisions support product scanning, clear action hierarchy, readable theme states, and consistent behavior across screen sizes.”
+> “To summarize, SOLE/SELECT completes the required user journey using a two-column mobile catalog and three-or-more-column tablet catalog, responsive detail and cart layouts, reusable Material components, centralized light and dark themes, a size-aware shared cart, specific product and order IDs, and `go_router` Navigation 2.0 throughout. Different sizes of one shoe remain separate, while repeated additions of the same size combine correctly.”
 
 ---
 
@@ -254,6 +260,9 @@ SOLE/SELECT is an original, product-first sneaker catalog. It is not presented a
 | Use reusable cards and small widgets | Smaller components are easier to reason about and can respond to the constraints of the place where they are used. | [F2] | `lib/widgets/` and private screen widgets |
 | Use `go_router` with product IDs | Declarative routes satisfy Navigation 2.0 and provide meaningful paths for products and guarded checkout. | [F5] | [`lib/main.dart`](lib/main.dart) |
 | Lift cart state to the app root | Catalog/detail/cart/checkout and the badge need the same cart data. One controller prevents conflicting copies. | [F6] | [`lib/main.dart`](lib/main.dart), [`lib/state/cart_controller.dart`](lib/state/cart_controller.dart) |
+| Identify products as `SS-P001`–`SS-P008` | A fixed SKU-like ID stays consistent across product data, routes, detail, cart, and checkout even if display names change. | Project data-integrity decision | Product data and every shopping screen |
+| Key cart lines by product + size | Shoe size changes what is being purchased. A composite ID prevents size 7 and size 8 from being merged while allowing two size-8 pairs to share a quantity. | Domain/data-integrity decision | [`lib/models/cart_item.dart`](lib/models/cart_item.dart), [`lib/state/cart_controller.dart`](lib/state/cart_controller.dart) |
+| Generate `SS-O-YYYYMMDD-HHMMSS-NN` order IDs | A checkout confirmation needs a specific, stable reference rather than one hard-coded value shared by every order. | Project traceability decision | Cart controller, route, and Checkout Screen |
 | Make display-only parts stateless | They can be rebuilt from inputs and do not need to own mutable state. | Flutter widget/state design applied in this project | Product card, checkout, cart lines, summary, brand mark |
 | Make interactive screens stateful | Search/filter/sort, size selection, theme mode, and cart listener updates change visible UI. | Exam rubric [R1] and Flutter state model [F6] | App root, Home, Product Detail, Cart |
 
@@ -269,16 +278,16 @@ Say that the sources **informed the rationale**, not that the interface was copi
 
 All eight catalog images are local 1254 × 1254 RGBA PNG files. Each contains the same embedded generation provenance described below.
 
-| Product | Local asset | Image source |
-|---|---|---|
-| Strata One | `assets/products/strata_one.png` | Project-specific AI-generated image; OpenAI Media Service API / `gpt-image` v2.0 metadata |
-| Flux Runner | `assets/products/flux_runner.png` | Project-specific AI-generated image; OpenAI Media Service API / `gpt-image` v2.0 metadata |
-| Court 88 | `assets/products/court_88.png` | Project-specific AI-generated image; OpenAI Media Service API / `gpt-image` v2.0 metadata |
-| Ridge Form | `assets/products/ridge_form.png` | Project-specific AI-generated image; OpenAI Media Service API / `gpt-image` v2.0 metadata |
-| Aero Knit | `assets/products/aero_knit.png` | Project-specific AI-generated image; OpenAI Media Service API / `gpt-image` v2.0 metadata |
-| Mono High | `assets/products/mono_high.png` | Project-specific AI-generated image; OpenAI Media Service API / `gpt-image` v2.0 metadata |
-| Dune Trek | `assets/products/dune_trek.png` | Project-specific AI-generated image; OpenAI Media Service API / `gpt-image` v2.0 metadata |
-| Harbor Court | `assets/products/harbor_court.png` | Project-specific AI-generated image; OpenAI Media Service API / `gpt-image` v2.0 metadata |
+| Product | Product ID | Local asset | Image source |
+|---|---|---|---|
+| Strata One | `SS-P001` | `assets/products/strata_one.png` | Project-specific AI-generated image; OpenAI Media Service API / `gpt-image` v2.0 metadata |
+| Flux Runner | `SS-P002` | `assets/products/flux_runner.png` | Project-specific AI-generated image; OpenAI Media Service API / `gpt-image` v2.0 metadata |
+| Court 88 | `SS-P003` | `assets/products/court_88.png` | Project-specific AI-generated image; OpenAI Media Service API / `gpt-image` v2.0 metadata |
+| Ridge Form | `SS-P004` | `assets/products/ridge_form.png` | Project-specific AI-generated image; OpenAI Media Service API / `gpt-image` v2.0 metadata |
+| Aero Knit | `SS-P005` | `assets/products/aero_knit.png` | Project-specific AI-generated image; OpenAI Media Service API / `gpt-image` v2.0 metadata |
+| Mono High | `SS-P006` | `assets/products/mono_high.png` | Project-specific AI-generated image; OpenAI Media Service API / `gpt-image` v2.0 metadata |
+| Dune Trek | `SS-P007` | `assets/products/dune_trek.png` | Project-specific AI-generated image; OpenAI Media Service API / `gpt-image` v2.0 metadata |
+| Harbor Court | `SS-P008` | `assets/products/harbor_court.png` | Project-specific AI-generated image; OpenAI Media Service API / `gpt-image` v2.0 metadata |
 
 **Repository evidence:**
 
@@ -301,16 +310,16 @@ Do **not** say that the images were photographed, hand-drawn, downloaded from a 
 
 | File | What to explain |
 |---|---|
-| [`lib/main.dart`](lib/main.dart) | Entry point, root theme state, shared controller, `MaterialApp.router`, `go_router` routes, dynamic product ID, checkout guard |
+| [`lib/main.dart`](lib/main.dart) | Entry point, root theme state, shared controller, `MaterialApp.router`, product/order routes, and checkout guards |
 | [`lib/theme/app_theme.dart`](lib/theme/app_theme.dart) | Central light/dark `ThemeData`, `ColorScheme`, typography, button/card/chip/search styling, selected-chip foreground |
 | [`lib/models/product.dart`](lib/models/product.dart) | Immutable structure for one catalog product |
-| [`lib/models/cart_item.dart`](lib/models/cart_item.dart) | Product plus mutable quantity; computed line subtotal |
-| [`lib/data/products.dart`](lib/data/products.dart) | Single catalog data source and product-ID lookup |
-| [`lib/state/cart_controller.dart`](lib/state/cart_controller.dart) | Add, increment, decrement, remove, totals, and `notifyListeners` |
+| [`lib/models/cart_item.dart`](lib/models/cart_item.dart) | Product, selected size, quantity, composite line ID, and computed subtotal |
+| [`lib/data/products.dart`](lib/data/products.dart) | Single catalog source, `SS-P001`–`SS-P008`, and product-ID lookup |
+| [`lib/state/cart_controller.dart`](lib/state/cart_controller.dart) | Size-aware add/increment/decrement/remove, totals, order-ID generation, and `notifyListeners` |
 | [`lib/screens/home_screen.dart`](lib/screens/home_screen.dart) | Search/filter/sort state, responsive breakpoints, `GridView.builder`, dark-mode chip styling |
-| [`lib/screens/product_detail_screen.dart`](lib/screens/product_detail_screen.dart) | Responsive stacked/side-by-side detail layout, selected size, Add to Cart feedback |
-| [`lib/screens/cart_screen.dart`](lib/screens/cart_screen.dart) | Listener lifecycle, responsive lines/summary, quantity actions, subtotal and total display |
-| [`lib/screens/checkout_screen.dart`](lib/screens/checkout_screen.dart) | Stateless final order summary and confirmation message |
+| [`lib/screens/product_detail_screen.dart`](lib/screens/product_detail_screen.dart) | Responsive detail layout, visible product ID, size selection, repeatable Add to Cart, and View Cart feedback |
+| [`lib/screens/cart_screen.dart`](lib/screens/cart_screen.dart) | Listener lifecycle, separate product-size lines, quantity actions, checkout start, subtotal and total display |
+| [`lib/screens/checkout_screen.dart`](lib/screens/checkout_screen.dart) | Visible order/product IDs, size-aware final summary, and confirmation message |
 | [`lib/widgets/product_card.dart`](lib/widgets/product_card.dart) | Reusable stateless `Card` with image, text, price, semantics, InkWell, and Hero |
 | [`lib/widgets/shop_app_bar.dart`](lib/widgets/shop_app_bar.dart) | Reusable brand mark, animated theme toggle, cart icon and badge |
 | [`lib/utils/currency.dart`](lib/utils/currency.dart) | Consistent Philippine peso formatting |
@@ -326,14 +335,18 @@ Do **not** say that the images were photographed, hand-drawn, downloaded from a 
 | Two phone columns | `_columnsFor(width < 600)` returns `2` |
 | Three or more tablet columns | 3 at 600, 4 at 900, 5 at 1200 |
 | Product image and price on detail | Large `Image.asset` and formatted price |
-| Navigation 2.0 with `go_router` | `MaterialApp.router`, `GoRouter`, and named URL paths |
-| Add to Cart | Detail button calls `CartController.add` |
+| Specific product IDs | `SS-P001`–`SS-P008` appear in cards, detail, routes, cart, and checkout |
+| Navigation 2.0 with `go_router` | `MaterialApp.router`, `GoRouter`, `/product/:id`, and `/checkout/:orderId` |
+| Add to Cart | Detail button calls `CartController.add(product, selectedSize)` and remains reusable |
+| Different sizes stay separate | Composite lines such as `SS-P001-US7` and `SS-P001-US8` |
+| Repeated same size combines | Adding `SS-P001-US8` again increments only its quantity |
 | Cart quantity controls | Plus and minus buttons update quantity |
 | Per-item subtotal | `CartItem.subtotal` |
 | Running total | `CartController.total` |
 | Checkout summary | Item lines, subtotals, and final total |
 | Checkout confirmation | Confirmation heading/message on checkout screen |
 | Checkout only when cart is non-empty | `/checkout` redirect guard |
+| Specific order IDs | Checkout displays `SS-O-YYYYMMDD-HHMMSS-NN` and includes it in the route |
 | `Scaffold` and `AppBar` on each screen | Catalog, Detail, Cart, Checkout, and fallback screen |
 | `Card`, `Image`, and `Text` | Product cards, cart lines, checkout lines |
 | Stateless widgets for static UI | ProductCard, CheckoutScreen, BrandMark, line/summary widgets |
@@ -366,6 +379,22 @@ Do **not** say that the images were photographed, hand-drawn, downloaded from a 
 ### Why use `ChangeNotifier` instead of storing the cart in every screen?
 
 “The badge, detail page, cart, checkout, and router guard all need the same data. One controller provides a single source of truth and notifies listeners after a mutation.”
+
+### Why are product ID and size both part of a cart-line ID?
+
+“Size changes the exact item being purchased. `SS-P001-US7` and `SS-P001-US8` must be separate lines even though both refer to Strata One. Two additions of `SS-P001-US8`, however, represent two units of the same variant, so they correctly share one line with quantity two.”
+
+### Why does Add to Cart remain available after adding once?
+
+“A shopper may need another quantity or another size of the same shoe. The primary Add button therefore remains active, while a separate View Cart button provides navigation without replacing the purchasing action.”
+
+### What do the IDs mean?
+
+“`SS` identifies SOLE/SELECT, `P` means product, and the three digits identify the catalog entry—for example, Strata One is `SS-P001`. A cart line appends the size, such as `SS-P001-US8`. An order follows `SS-O-YYYYMMDD-HHMMSS-NN`, where `O` means order, the date and time show when checkout began, and the final sequence prevents duplicate IDs within the controller.”
+
+### When is a new order ID created?
+
+“The ID is created when the shopper begins checkout. It remains stable while that unchanged cart is reviewed. If the cart is edited, the old ID is invalidated and the next checkout gets a new one. An empty cart cannot generate an order ID.”
 
 ### Why use `go_router`?
 

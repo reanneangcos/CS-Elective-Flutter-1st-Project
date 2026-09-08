@@ -8,9 +8,14 @@ import '../widgets/shop_app_bar.dart';
 /// Read-only final screen. It is stateless because checkout only presents the
 /// cart snapshot and a confirmation message; the router guards access to it.
 class CheckoutScreen extends StatelessWidget {
-  const CheckoutScreen({super.key, required this.cartController});
+  const CheckoutScreen({
+    super.key,
+    required this.cartController,
+    required this.orderId,
+  });
 
   final CartController cartController;
+  final String orderId;
 
   @override
   Widget build(BuildContext context) {
@@ -63,7 +68,11 @@ class CheckoutScreen extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 8),
-                    Text('ORDER SS-2026-0901', style: text.labelSmall),
+                    Text(
+                      'ORDER ID: $orderId',
+                      key: const Key('order-id'),
+                      style: text.labelSmall,
+                    ),
                     const SizedBox(height: 30),
                     Card(
                       child: Padding(
@@ -81,6 +90,8 @@ class CheckoutScreen extends StatelessWidget {
                                 child: _PurchaseLine(
                                   itemName: item.product.name,
                                   imageAsset: item.product.imageAsset,
+                                  productAndSize:
+                                      '${item.product.id} · SIZE US ${item.size}',
                                   quantityAndPrice:
                                       '${item.quantity} × ${formatPeso(item.product.price)}',
                                   subtotal: formatPeso(item.subtotal),
@@ -131,12 +142,14 @@ class _PurchaseLine extends StatelessWidget {
   const _PurchaseLine({
     required this.itemName,
     required this.imageAsset,
+    required this.productAndSize,
     required this.quantityAndPrice,
     required this.subtotal,
   });
 
   final String itemName;
   final String imageAsset;
+  final String productAndSize;
   final String quantityAndPrice;
   final String subtotal;
 
@@ -161,6 +174,7 @@ class _PurchaseLine extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(itemName, style: text.titleMedium),
+                  Text(productAndSize, style: text.bodySmall),
                   Text(quantityAndPrice, style: text.bodySmall),
                 ],
               ),
