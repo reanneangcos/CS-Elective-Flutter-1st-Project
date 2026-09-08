@@ -12,8 +12,8 @@ images are original to this project.
 ## Exam requirements demonstrated
 
 - `GridView.builder` catalog with eight original products
-- `LayoutBuilder` responsive grid: 2 columns on phones, 3 on tablets, and 4 on
-  wide screens
+- `LayoutBuilder` responsive grid: 2 columns on phones and 3-5 columns on
+  tablet and desktop widths
 - Navigation 2.0 with `go_router` and a `/product/:id` route
 - `Scaffold` and `AppBar` on every screen
 - Centralized light and dark `ThemeData`
@@ -50,6 +50,29 @@ flutter test
   application in light or dark mode.
 - `CartController` is the single shared source of truth for cart items and
   totals across routes.
+
+## Presentation walkthrough
+
+- `main.dart`: app entry point, shared cart creation, Navigation 2.0 routes,
+  guarded checkout route, and global light/dark `ThemeMode` state.
+- `theme/app_theme.dart`: centralized color schemes, typography, cards,
+  buttons, chips, search, menus, dividers, and snackbar styling.
+- `models/` and `data/products.dart`: immutable product/cart data and the eight
+  products displayed by the catalog.
+- `state/cart_controller.dart`: add, increment, decrement, remove, subtotal,
+  total, and `ChangeNotifier` updates.
+- `screens/home_screen.dart` and `widgets/product_card.dart`: responsive
+  `GridView.builder`, search/filter/sort state, and stateless product cards.
+- `screens/product_detail_screen.dart`: responsive product details, selected
+  size, and stateful add-to-cart/view-cart button.
+- `screens/cart_screen.dart`: stateful cart listener, quantity controls,
+  subtotals, running total, and mobile/tablet layouts.
+- `screens/checkout_screen.dart`: stateless confirmation and final item,
+  subtotal, and total summary.
+- `widgets/shop_app_bar.dart` and `utils/currency.dart`: shared app-bar controls,
+  live cart badge, theme toggle, and reusable peso formatting.
+- `test/`: verifies the required flow, two phone columns, three tablet columns,
+  responsive rendering, live totals, theme switching, and checkout protection.
 
 ## Project structure
 

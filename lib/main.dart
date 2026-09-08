@@ -10,6 +10,7 @@ import 'state/cart_controller.dart';
 import 'theme/app_theme.dart';
 
 void main() {
+  // Flutter starts here and mounts the root widget on the screen.
   runApp(const SoleSelectApp());
 }
 
@@ -23,18 +24,29 @@ class SoleSelectApp extends StatefulWidget {
 }
 
 class _SoleSelectAppState extends State<SoleSelectApp> {
+  // These objects are created once so every route shares the same cart and
+  // navigation state instead of creating a separate cart per screen.
   late final CartController _cartController;
   late final GoRouter _router;
+
+  // ThemeMode is interaction-driven state, which is why the app root uses a
+  // StatefulWidget rather than a StatelessWidget.
   ThemeMode _themeMode = ThemeMode.light;
 
   @override
   void initState() {
     super.initState();
     _cartController = CartController();
+
+    // GoRouter is Flutter's declarative Navigation 2.0 solution. Each route
+    // maps a URL to the widget that represents that page.
     _router = GoRouter(
       initialLocation: '/',
+      // The router rechecks redirects whenever the cart changes. This makes
+      // the checkout guard below react to an empty or non-empty cart.
       refreshListenable: _cartController,
       routes: [
+        // Opening the app goes directly to the required product-grid home.
         GoRoute(
           path: '/',
           builder: (context, state) => HomeScreen(
@@ -42,9 +54,12 @@ class _SoleSelectAppState extends State<SoleSelectApp> {
             onToggleTheme: _toggleTheme,
           ),
         ),
+        // Old /shop links remain valid but resolve to the catalog at root.
+        GoRoute(path: '/shop', redirect: (context, state) => '/'),
         GoRoute(
           path: '/product/:id',
           builder: (context, state) {
+            // :id is a path parameter, so every product gets a shareable URL.
             final productId = state.pathParameters['id'];
             final product = productById(productId);
             if (product == null) {
@@ -63,6 +78,7 @@ class _SoleSelectAppState extends State<SoleSelectApp> {
         ),
         GoRoute(
           path: '/checkout',
+          // Checkout must only be reachable when at least one item exists.
           redirect: (context, state) =>
               _cartController.isEmpty ? '/cart' : null,
           builder: (context, state) =>
@@ -74,6 +90,7 @@ class _SoleSelectAppState extends State<SoleSelectApp> {
   }
 
   void _toggleTheme() {
+    // setState tells Flutter to rebuild MaterialApp with the other ThemeMode.
     setState(() {
       _themeMode = _themeMode == ThemeMode.dark
           ? ThemeMode.light
@@ -90,6 +107,8 @@ class _SoleSelectAppState extends State<SoleSelectApp> {
 
   @override
   Widget build(BuildContext context) {
+    // ThemeData is applied once at MaterialApp level, so screens obtain all
+    // colors and typography from Theme.of(context).
     return MaterialApp.router(
       title: 'SOLE/SELECT',
       debugShowCheckedModeBanner: false,
@@ -106,6 +125,7 @@ class _NotFoundScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Even the fallback page follows the requirement to use Scaffold/AppBar.
     return Scaffold(
       appBar: AppBar(title: const Text('SOLE/SELECT')),
       body: Center(

@@ -1,5 +1,9 @@
 import '../models/product.dart';
 
+/// In-memory catalog used by the home and detail screens.
+///
+/// `const` makes the sample product data immutable and avoids rebuilding these
+/// objects each time the UI refreshes.
 const products = <Product>[
   Product(
     id: 'strata-one',
@@ -132,6 +136,8 @@ const products = <Product>[
 ];
 
 Product? productById(String? id) {
+  // Route parameters arrive as strings. Returning null lets the router show a
+  // friendly not-found screen for an unknown product URL.
   for (final product in products) {
     if (product.id == id) return product;
   }

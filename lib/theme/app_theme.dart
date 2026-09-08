@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
 
+/// Central design system for the whole application.
+///
+/// Screens never declare their own colors. Both modes use the same component
+/// and typography rules, while their ColorSchemes provide light/dark values.
 abstract final class AppTheme {
+  // Private palette tokens keep raw color values in this file only.
   static const _ink = Color(0xFF0A0A0A);
   static const _paper = Color(0xFFFFFFFF);
   static const _white = Color(0xFFFFFFFF);
@@ -44,6 +49,7 @@ abstract final class AppTheme {
   );
 
   static ThemeData _build(ColorScheme colors) {
+    // Material 3 supplies accessible defaults that we customize consistently.
     final base = ThemeData(
       useMaterial3: true,
       brightness: colors.brightness,
@@ -51,6 +57,8 @@ abstract final class AppTheme {
       scaffoldBackgroundColor: colors.surface,
     );
 
+    // copyWith defines shared styling for every AppBar, Card, button, chip,
+    // search field, menu, divider, and snackbar in the application.
     return base.copyWith(
       appBarTheme: AppBarTheme(
         backgroundColor: colors.surface,
@@ -136,6 +144,12 @@ abstract final class AppTheme {
         shape: const StadiumBorder(),
         labelStyle: base.textTheme.labelMedium?.copyWith(
           color: colors.onSurface,
+          fontWeight: FontWeight.w700,
+        ),
+        // ChoiceChip uses this style while selected. `onSecondary` is dark
+        // enough to remain readable on the lime secondary color in both modes.
+        secondaryLabelStyle: base.textTheme.labelMedium?.copyWith(
+          color: colors.onSecondary,
           fontWeight: FontWeight.w700,
         ),
       ),

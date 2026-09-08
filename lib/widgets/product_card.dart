@@ -13,12 +13,16 @@ class ProductCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Pulling values from ThemeData keeps the card correct in both light and
+    // dark mode without hardcoded screen-level colors.
     final colors = Theme.of(context).colorScheme;
     final text = Theme.of(context).textTheme;
 
     return Card(
       clipBehavior: Clip.antiAlias,
       child: InkWell(
+        // The parent supplies navigation behavior; this reusable widget only
+        // presents one product and reports taps.
         onTap: onTap,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,

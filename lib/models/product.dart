@@ -1,3 +1,7 @@
+/// Immutable data model for one catalog product.
+///
+/// This is plain application data, not a widget. `final` fields prevent a
+/// product from changing unexpectedly after the catalog is created.
 class Product {
   const Product({
     required this.id,
@@ -13,12 +17,12 @@ class Product {
     required this.releaseLabel,
   });
 
-  final String id;
+  final String id; // Stable key used by routes and the cart map.
   final String name;
   final String colorway;
   final String category;
-  final double price;
-  final String imageAsset;
+  final double price; // Numeric storage allows subtotal/total calculations.
+  final String imageAsset; // Path declared under assets/ in pubspec.yaml.
   final String description;
   final String materials;
   final String fitNote;

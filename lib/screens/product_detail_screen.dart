@@ -6,6 +6,8 @@ import '../state/cart_controller.dart';
 import '../utils/currency.dart';
 import '../widgets/shop_app_bar.dart';
 
+/// Stateful because the selected size and add/view-cart button change after
+/// user interaction. The product itself remains immutable.
 class ProductDetailScreen extends StatefulWidget {
   const ProductDetailScreen({
     super.key,
@@ -31,6 +33,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
   }
 
   void _addToCart() {
+    // Updating the shared controller also updates the badge, cart, and total.
     widget.cartController.add(widget.product);
     setState(() => _added = true);
     ScaffoldMessenger.of(context)
@@ -57,39 +60,52 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
       body: SafeArea(
         child: LayoutBuilder(
           builder: (context, constraints) {
+            // Tablets use a side-by-side composition; phones stack the image
+            // and information in a vertically scrollable list.
             if (constraints.maxWidth >= 760) {
-              return Padding(
-                padding: const EdgeInsets.all(28),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    Expanded(child: _ProductImage(product: widget.product)),
-                    const SizedBox(width: 40),
-                    Expanded(
-                      child: SingleChildScrollView(
-                        child: _ProductInformation(
-                          product: widget.product,
-                          selectedSize: _selectedSize,
-                          added: _added,
-                          onSizeSelected: (size) =>
-                              setState(() => _selectedSize = size),
-                          onAdd: _addToCart,
+              return Center(
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 1400),
+                  child: Padding(
+                    padding: const EdgeInsets.all(28),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Expanded(child: _ProductImage(product: widget.product)),
+                        const SizedBox(width: 40),
+                        Expanded(
+                          child: SingleChildScrollView(
+                            child: _ProductInformation(
+                              product: widget.product,
+                              selectedSize: _selectedSize,
+                              added: _added,
+                              onSizeSelected: (size) =>
+                                  setState(() => _selectedSize = size),
+                              onAdd: _addToCart,
+                            ),
+                          ),
                         ),
-                      ),
+                      ],
                     ),
-                  ],
+                  ),
                 ),
               );
             }
 
+            final pagePadding = constraints.maxWidth < 360 ? 12.0 : 18.0;
             return ListView(
-              padding: const EdgeInsets.fromLTRB(18, 18, 18, 32),
+              padding: EdgeInsets.fromLTRB(
+                pagePadding,
+                pagePadding,
+                pagePadding,
+                32,
+              ),
               children: [
                 AspectRatio(
                   aspectRatio: 1,
                   child: _ProductImage(product: widget.product),
                 ),
-                const SizedBox(height: 28),
+                SizedBox(height: constraints.maxWidth < 360 ? 20 : 28),
                 _ProductInformation(
                   product: widget.product,
                   selectedSize: _selectedSize,
@@ -114,12 +130,16 @@ class _ProductImage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Card and Image are explicit rubric widgets. Hero animates the matching
+    // catalog image into this larger detail image during navigation.
     return Card(
       clipBehavior: Clip.antiAlias,
       child: ColoredBox(
         color: Theme.of(context).colorScheme.surfaceContainer,
         child: Padding(
-          padding: const EdgeInsets.all(24),
+          padding: EdgeInsets.all(
+            MediaQuery.sizeOf(context).width < 360 ? 14 : 24,
+          ),
           child: Hero(
             tag: 'product-${product.id}',
             child: Image.asset(
@@ -151,6 +171,8 @@ class _ProductInformation extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // This section is stateless: the parent owns changing values and passes
+    // both data and callbacks down as constructor parameters.
     final text = Theme.of(context).textTheme;
     final colors = Theme.of(context).colorScheme;
 
@@ -182,6 +204,7 @@ class _ProductInformation extends StatelessWidget {
         ),
         const SizedBox(height: 12),
         Wrap(
+          // Wrap moves size chips to another line on narrow screens.
           spacing: 8,
           runSpacing: 8,
           children: product.sizes.map((size) {

@@ -3,6 +3,8 @@ import 'package:sole_select/data/products.dart';
 import 'package:sole_select/state/cart_controller.dart';
 
 void main() {
+  // This isolates the rubric's quantity, subtotal, and live-total behavior
+  // from the interface so the state logic is easy to verify independently.
   test('cart quantities and running total update live', () {
     final cart = CartController();
     final product = products.first;

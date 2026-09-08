@@ -1,3 +1,5 @@
+/// Formats a numeric price for display using the Philippine peso symbol and
+/// comma-separated thousands (for example, 6890 becomes `₱6,890`).
 String formatPeso(double amount) {
   final digits = amount.round().toString();
   final buffer = StringBuffer();

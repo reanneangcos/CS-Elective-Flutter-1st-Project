@@ -21,6 +21,7 @@ class _CartScreenState extends State<CartScreen> {
   @override
   void initState() {
     super.initState();
+    // Listening connects ChangeNotifier state to this StatefulWidget.
     widget.cartController.addListener(_cartChanged);
   }
 
@@ -55,50 +56,84 @@ class _CartScreenState extends State<CartScreen> {
             ? _EmptyCart(onShop: () => context.go('/'))
             : LayoutBuilder(
                 builder: (context, constraints) {
-                  final horizontal = constraints.maxWidth >= 840;
-                  final list = ListView.separated(
-                    padding: const EdgeInsets.all(18),
-                    itemCount: cart.items.length,
-                    separatorBuilder: (context, index) =>
-                        const SizedBox(height: 12),
-                    itemBuilder: (context, index) {
-                      final item = cart.items[index];
-                      return _CartLine(
-                        item: item,
-                        onIncrease: () => cart.increment(item.product.id),
-                        onDecrease: () => cart.decrement(item.product.id),
-                        onRemove: () => cart.remove(item.product.id),
-                      );
-                    },
-                  );
+                  // Large screens place the summary beside the list. Phones
+                  // keep everything in one scroll view to prevent overflow.
+                  final horizontal = constraints.maxWidth >= 900;
+                  final pagePadding = constraints.maxWidth < 360 ? 12.0 : 18.0;
 
-                  if (horizontal) {
-                    return Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Expanded(flex: 3, child: list),
-                        SizedBox(
-                          width: 340,
-                          child: Padding(
-                            padding: const EdgeInsets.all(18),
-                            child: _CartSummary(cart: cart),
-                          ),
-                        ),
-                      ],
+                  Widget buildLine(int index) {
+                    final item = cart.items[index];
+                    return _CartLine(
+                      item: item,
+                      onIncrease: () => cart.increment(item.product.id),
+                      onDecrease: () => cart.decrement(item.product.id),
+                      onRemove: () => cart.remove(item.product.id),
                     );
                   }
 
-                  return Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.fromLTRB(18, 22, 18, 4),
-                        child: Text('YOUR CART', style: text.headlineSmall),
+                  final list = ListView.separated(
+                    padding: EdgeInsets.all(pagePadding),
+                    itemCount: cart.items.length,
+                    separatorBuilder: (context, index) =>
+                        const SizedBox(height: 12),
+                    itemBuilder: (context, index) => buildLine(index),
+                  );
+
+                  if (horizontal) {
+                    return Center(
+                      child: ConstrainedBox(
+                        constraints: const BoxConstraints(maxWidth: 1400),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Expanded(flex: 3, child: list),
+                            SizedBox(
+                              width: 340,
+                              child: Padding(
+                                padding: const EdgeInsets.all(18),
+                                child: _CartSummary(cart: cart),
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
-                      Expanded(child: list),
-                      Padding(
-                        padding: const EdgeInsets.all(18),
-                        child: _CartSummary(cart: cart),
+                    );
+                  }
+
+                  return CustomScrollView(
+                    key: const Key('cart-scroll'),
+                    slivers: [
+                      SliverPadding(
+                        padding: EdgeInsets.fromLTRB(
+                          pagePadding,
+                          22,
+                          pagePadding,
+                          16,
+                        ),
+                        sliver: SliverToBoxAdapter(
+                          child: Text('YOUR CART', style: text.headlineSmall),
+                        ),
+                      ),
+                      SliverPadding(
+                        padding: EdgeInsets.symmetric(horizontal: pagePadding),
+                        sliver: SliverList.builder(
+                          itemCount: cart.items.length,
+                          itemBuilder: (context, index) => Padding(
+                            padding: const EdgeInsets.only(bottom: 12),
+                            child: buildLine(index),
+                          ),
+                        ),
+                      ),
+                      SliverPadding(
+                        padding: EdgeInsets.fromLTRB(
+                          pagePadding,
+                          6,
+                          pagePadding,
+                          24,
+                        ),
+                        sliver: SliverToBoxAdapter(
+                          child: _CartSummary(cart: cart),
+                        ),
                       ),
                     ],
                   );
@@ -128,73 +163,106 @@ class _CartLine extends StatelessWidget {
     final colors = Theme.of(context).colorScheme;
 
     return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(12),
-        child: Row(
-          children: [
-            SizedBox.square(
-              dimension: 94,
-              child: Image.asset(
-                item.product.imageAsset,
-                fit: BoxFit.contain,
-                semanticLabel: '${item.product.name} sneaker',
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          // The line's own available width decides whether controls sit beside
+          // product details or move onto a second row.
+          final compact = constraints.maxWidth < 360;
+          final details = Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(item.product.name, style: text.titleMedium),
+              const SizedBox(height: 3),
+              Text(
+                item.product.colorway,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: text.bodySmall?.copyWith(color: colors.onSurfaceVariant),
               ),
+              const SizedBox(height: 10),
+              Text(
+                formatPeso(item.subtotal),
+                key: Key('subtotal-${item.product.id}'),
+                style: text.labelLarge,
+              ),
+            ],
+          );
+          final quantity = Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              _QuantityButton(
+                icon: Icons.remove_rounded,
+                tooltip: 'Decrease quantity',
+                onPressed: onDecrease,
+              ),
+              SizedBox(
+                width: 42,
+                child: Text(
+                  item.quantity.toString(),
+                  key: Key('quantity-${item.product.id}'),
+                  textAlign: TextAlign.center,
+                  style: text.titleMedium,
+                ),
+              ),
+              _QuantityButton(
+                icon: Icons.add_rounded,
+                tooltip: 'Increase quantity',
+                onPressed: onIncrease,
+              ),
+            ],
+          );
+          final image = SizedBox.square(
+            dimension: compact ? 72 : 94,
+            child: Image.asset(
+              item.product.imageAsset,
+              fit: BoxFit.contain,
+              semanticLabel: '${item.product.name} sneaker',
             ),
-            const SizedBox(width: 14),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(item.product.name, style: text.titleMedium),
-                  const SizedBox(height: 3),
-                  Text(
-                    item.product.colorway,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: text.bodySmall?.copyWith(
-                      color: colors.onSurfaceVariant,
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-                  Text(
-                    formatPeso(item.subtotal),
-                    key: Key('subtotal-${item.product.id}'),
-                    style: text.labelLarge,
-                  ),
-                  const SizedBox(height: 10),
-                  Row(
+          );
+          final removeButton = IconButton(
+            tooltip: 'Remove item',
+            onPressed: onRemove,
+            icon: const Icon(Icons.close_rounded),
+          );
+
+          return Padding(
+            padding: const EdgeInsets.all(12),
+            child: compact
+                ? Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      _QuantityButton(
-                        icon: Icons.remove_rounded,
-                        tooltip: 'Decrease quantity',
-                        onPressed: onDecrease,
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          image,
+                          const SizedBox(width: 10),
+                          Expanded(child: details),
+                          removeButton,
+                        ],
                       ),
-                      SizedBox(
-                        width: 42,
-                        child: Text(
-                          item.quantity.toString(),
-                          key: Key('quantity-${item.product.id}'),
-                          textAlign: TextAlign.center,
-                          style: text.titleMedium,
+                      const SizedBox(height: 12),
+                      quantity,
+                    ],
+                  )
+                : Row(
+                    children: [
+                      image,
+                      const SizedBox(width: 14),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            details,
+                            const SizedBox(height: 10),
+                            quantity,
+                          ],
                         ),
                       ),
-                      _QuantityButton(
-                        icon: Icons.add_rounded,
-                        tooltip: 'Increase quantity',
-                        onPressed: onIncrease,
-                      ),
+                      removeButton,
                     ],
                   ),
-                ],
-              ),
-            ),
-            IconButton(
-              tooltip: 'Remove item',
-              onPressed: onRemove,
-              icon: const Icon(Icons.close_rounded),
-            ),
-          ],
-        ),
+          );
+        },
       ),
     );
   }
@@ -231,6 +299,8 @@ class _CartSummary extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Values are recomputed by CartController and supplied on every cart
+    // rebuild, so this display-only section stays stateless.
     final text = Theme.of(context).textTheme;
     return Card(
       child: Padding(
@@ -243,9 +313,10 @@ class _CartSummary extends StatelessWidget {
             const SizedBox(height: 18),
             Row(
               children: [
-                Text('${cart.totalQuantity} ITEM(S)'),
-                const Spacer(),
-                Text(formatPeso(cart.total)),
+                Expanded(child: Text('${cart.totalQuantity} ITEM(S)')),
+                Flexible(
+                  child: Text(formatPeso(cart.total), textAlign: TextAlign.end),
+                ),
               ],
             ),
             const SizedBox(height: 12),
@@ -253,12 +324,14 @@ class _CartSummary extends StatelessWidget {
             const SizedBox(height: 12),
             Row(
               children: [
-                Text('TOTAL', style: text.titleMedium),
-                const Spacer(),
-                Text(
-                  formatPeso(cart.total),
-                  key: const Key('cart-total'),
-                  style: text.titleLarge,
+                Expanded(child: Text('TOTAL', style: text.titleMedium)),
+                Flexible(
+                  child: Text(
+                    formatPeso(cart.total),
+                    key: const Key('cart-total'),
+                    textAlign: TextAlign.end,
+                    style: text.titleLarge,
+                  ),
                 ),
               ],
             ),
