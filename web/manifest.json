@@ -1,0 +1,19 @@
+{
+  "name": "Emerald Pok\u00e9dex",
+  "short_name": "Pok\u00e9dex",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#123e32",
+  "theme_color": "#123e32",
+  "description": "An Emerald-inspired Pok\u00e9dex for the Dart async activity.",
+  "orientation": "portrait-primary",
+  "prefer_related_applications": false,
+  "icons": [
+    {
+      "src": "favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}
