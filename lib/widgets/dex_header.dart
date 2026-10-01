@@ -54,7 +54,7 @@ class DexHeader extends StatelessWidget {
                       ),
                       const SizedBox(width: 9),
                       const Text(
-                        'NATIONAL ARCHIVE',
+                        'LEGENDARY ARCHIVE',
                         style: TextStyle(
                           color: EmeraldTheme.mint,
                           fontSize: 11,
@@ -65,7 +65,7 @@ class DexHeader extends StatelessWidget {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    '001 — 030',
+                    'ALL GENERATIONS',
                     style: EmeraldTheme.pixel(18, color: EmeraldTheme.paper),
                   ),
                 ],

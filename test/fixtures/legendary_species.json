@@ -1,0 +1,361 @@
+{
+  "data": {
+    "pokemonspecies": [
+      {
+        "id": 144,
+        "name": "articuno",
+        "is_legendary": true
+      },
+      {
+        "id": 145,
+        "name": "zapdos",
+        "is_legendary": true
+      },
+      {
+        "id": 146,
+        "name": "moltres",
+        "is_legendary": true
+      },
+      {
+        "id": 150,
+        "name": "mewtwo",
+        "is_legendary": true
+      },
+      {
+        "id": 243,
+        "name": "raikou",
+        "is_legendary": true
+      },
+      {
+        "id": 244,
+        "name": "entei",
+        "is_legendary": true
+      },
+      {
+        "id": 245,
+        "name": "suicune",
+        "is_legendary": true
+      },
+      {
+        "id": 249,
+        "name": "lugia",
+        "is_legendary": true
+      },
+      {
+        "id": 250,
+        "name": "ho-oh",
+        "is_legendary": true
+      },
+      {
+        "id": 377,
+        "name": "regirock",
+        "is_legendary": true
+      },
+      {
+        "id": 378,
+        "name": "regice",
+        "is_legendary": true
+      },
+      {
+        "id": 379,
+        "name": "registeel",
+        "is_legendary": true
+      },
+      {
+        "id": 380,
+        "name": "latias",
+        "is_legendary": true
+      },
+      {
+        "id": 381,
+        "name": "latios",
+        "is_legendary": true
+      },
+      {
+        "id": 382,
+        "name": "kyogre",
+        "is_legendary": true
+      },
+      {
+        "id": 383,
+        "name": "groudon",
+        "is_legendary": true
+      },
+      {
+        "id": 384,
+        "name": "rayquaza",
+        "is_legendary": true
+      },
+      {
+        "id": 480,
+        "name": "uxie",
+        "is_legendary": true
+      },
+      {
+        "id": 481,
+        "name": "mesprit",
+        "is_legendary": true
+      },
+      {
+        "id": 482,
+        "name": "azelf",
+        "is_legendary": true
+      },
+      {
+        "id": 483,
+        "name": "dialga",
+        "is_legendary": true
+      },
+      {
+        "id": 484,
+        "name": "palkia",
+        "is_legendary": true
+      },
+      {
+        "id": 485,
+        "name": "heatran",
+        "is_legendary": true
+      },
+      {
+        "id": 486,
+        "name": "regigigas",
+        "is_legendary": true
+      },
+      {
+        "id": 487,
+        "name": "giratina",
+        "is_legendary": true
+      },
+      {
+        "id": 488,
+        "name": "cresselia",
+        "is_legendary": true
+      },
+      {
+        "id": 638,
+        "name": "cobalion",
+        "is_legendary": true
+      },
+      {
+        "id": 639,
+        "name": "terrakion",
+        "is_legendary": true
+      },
+      {
+        "id": 640,
+        "name": "virizion",
+        "is_legendary": true
+      },
+      {
+        "id": 641,
+        "name": "tornadus",
+        "is_legendary": true
+      },
+      {
+        "id": 642,
+        "name": "thundurus",
+        "is_legendary": true
+      },
+      {
+        "id": 643,
+        "name": "reshiram",
+        "is_legendary": true
+      },
+      {
+        "id": 644,
+        "name": "zekrom",
+        "is_legendary": true
+      },
+      {
+        "id": 645,
+        "name": "landorus",
+        "is_legendary": true
+      },
+      {
+        "id": 646,
+        "name": "kyurem",
+        "is_legendary": true
+      },
+      {
+        "id": 716,
+        "name": "xerneas",
+        "is_legendary": true
+      },
+      {
+        "id": 717,
+        "name": "yveltal",
+        "is_legendary": true
+      },
+      {
+        "id": 718,
+        "name": "zygarde",
+        "is_legendary": true
+      },
+      {
+        "id": 772,
+        "name": "type-null",
+        "is_legendary": true
+      },
+      {
+        "id": 773,
+        "name": "silvally",
+        "is_legendary": true
+      },
+      {
+        "id": 785,
+        "name": "tapu-koko",
+        "is_legendary": true
+      },
+      {
+        "id": 786,
+        "name": "tapu-lele",
+        "is_legendary": true
+      },
+      {
+        "id": 787,
+        "name": "tapu-bulu",
+        "is_legendary": true
+      },
+      {
+        "id": 788,
+        "name": "tapu-fini",
+        "is_legendary": true
+      },
+      {
+        "id": 789,
+        "name": "cosmog",
+        "is_legendary": true
+      },
+      {
+        "id": 790,
+        "name": "cosmoem",
+        "is_legendary": true
+      },
+      {
+        "id": 791,
+        "name": "solgaleo",
+        "is_legendary": true
+      },
+      {
+        "id": 792,
+        "name": "lunala",
+        "is_legendary": true
+      },
+      {
+        "id": 800,
+        "name": "necrozma",
+        "is_legendary": true
+      },
+      {
+        "id": 888,
+        "name": "zacian",
+        "is_legendary": true
+      },
+      {
+        "id": 889,
+        "name": "zamazenta",
+        "is_legendary": true
+      },
+      {
+        "id": 890,
+        "name": "eternatus",
+        "is_legendary": true
+      },
+      {
+        "id": 891,
+        "name": "kubfu",
+        "is_legendary": true
+      },
+      {
+        "id": 892,
+        "name": "urshifu",
+        "is_legendary": true
+      },
+      {
+        "id": 894,
+        "name": "regieleki",
+        "is_legendary": true
+      },
+      {
+        "id": 895,
+        "name": "regidrago",
+        "is_legendary": true
+      },
+      {
+        "id": 896,
+        "name": "glastrier",
+        "is_legendary": true
+      },
+      {
+        "id": 897,
+        "name": "spectrier",
+        "is_legendary": true
+      },
+      {
+        "id": 898,
+        "name": "calyrex",
+        "is_legendary": true
+      },
+      {
+        "id": 905,
+        "name": "enamorus",
+        "is_legendary": true
+      },
+      {
+        "id": 1001,
+        "name": "wo-chien",
+        "is_legendary": true
+      },
+      {
+        "id": 1002,
+        "name": "chien-pao",
+        "is_legendary": true
+      },
+      {
+        "id": 1003,
+        "name": "ting-lu",
+        "is_legendary": true
+      },
+      {
+        "id": 1004,
+        "name": "chi-yu",
+        "is_legendary": true
+      },
+      {
+        "id": 1007,
+        "name": "koraidon",
+        "is_legendary": true
+      },
+      {
+        "id": 1008,
+        "name": "miraidon",
+        "is_legendary": true
+      },
+      {
+        "id": 1014,
+        "name": "okidogi",
+        "is_legendary": true
+      },
+      {
+        "id": 1015,
+        "name": "munkidori",
+        "is_legendary": true
+      },
+      {
+        "id": 1016,
+        "name": "fezandipiti",
+        "is_legendary": true
+      },
+      {
+        "id": 1017,
+        "name": "ogerpon",
+        "is_legendary": true
+      },
+      {
+        "id": 1024,
+        "name": "terapagos",
+        "is_legendary": true
+      }
+    ]
+  }
+}

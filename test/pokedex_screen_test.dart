@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:convert';
 
 import 'package:emerald_pokedex/screens/pokedex_screen.dart';
 import 'package:emerald_pokedex/services/pokemon_service.dart';
@@ -10,14 +9,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
 
-String fixture([
-  List<String> names = const ['bulbasaur', 'ivysaur', 'venusaur'],
-]) => jsonEncode({
-  'results': [
-    for (var i = 0; i < names.length; i++)
-      {'name': names[i], 'url': 'https://pokeapi.co/api/v2/pokemon/${i + 1}/'},
-  ],
-});
+import 'fixtures/pokemon_fixtures.dart';
 
 Widget app(PokemonService service) => MaterialApp(
   theme: EmeraldTheme.theme,
@@ -42,16 +34,33 @@ void main() {
     pending.complete(http.Response(fixture(), 200));
     await tester.pumpAndSettle();
     expect(find.byType(PokemonCard), findsNWidgets(3));
-    expect(find.text('No. 001'), findsOneWidget);
-    await tester.enterText(find.byType(TextField), 'ivysaur');
+    expect(find.text('No. 150'), findsOneWidget);
+    expect(find.text('LEGENDARY INDEX'), findsOneWidget);
+    expect(find.text('3 / 3 Pokémon'), findsOneWidget);
+    await tester.enterText(find.byType(TextField), 'lugia');
     await tester.pumpAndSettle();
     expect(find.byType(PokemonCard), findsOneWidget);
-    expect(find.text('IVYSAUR'), findsOneWidget);
+    expect(find.text('LUGIA'), findsOneWidget);
+    expect(find.text('1 / 3 Pokémon'), findsOneWidget);
     await tester.tap(find.byTooltip('Clear search'));
     await tester.pumpAndSettle();
     await tester.tap(find.byTooltip('Sort by name'));
     await tester.pumpAndSettle();
     expect(find.text('A–Z'), findsOneWidget);
+    expect(
+      tester
+          .widgetList<PokemonCard>(find.byType(PokemonCard))
+          .map((card) => card.pokemon.name),
+      ['lugia', 'mewtwo', 'rayquaza'],
+    );
+    await tester.tap(find.byTooltip('Sort by number'));
+    await tester.pumpAndSettle();
+    expect(
+      tester
+          .widgetList<PokemonCard>(find.byType(PokemonCard))
+          .map((card) => card.pokemon.id),
+      [150, 249, 384],
+    );
     expect(calls, 1);
   });
 
@@ -86,7 +95,7 @@ void main() {
     expect(find.text('RELOAD POKÉDEX'), findsOneWidget);
   });
 
-  testWidgets('empty search can be cleared and padded ID search works', (
+  testWidgets('empty search can be cleared and National ID search works', (
     tester,
   ) async {
     final service = PokemonService(
@@ -102,9 +111,9 @@ void main() {
     await tester.tap(find.text('CLEAR SEARCH'));
     await tester.pumpAndSettle();
     expect(find.byType(PokemonCard), findsNWidgets(3));
-    await tester.enterText(find.byType(TextField), '#002');
+    await tester.enterText(find.byType(TextField), '#249');
     await tester.pumpAndSettle();
-    expect(find.text('IVYSAUR'), findsOneWidget);
+    expect(find.text('LUGIA'), findsOneWidget);
     expect(find.byType(PokemonCard), findsOneWidget);
   });
 
@@ -126,17 +135,16 @@ void main() {
     const Size(390, 844),
     const Size(844, 390),
   ]) {
-    testWidgets('grid scrolls through all 30 at $size', (tester) async {
+    testWidgets('grid scrolls through every Legendary at $size', (
+      tester,
+    ) async {
       tester.view.physicalSize = size;
       tester.view.devicePixelRatio = 1;
       addTearDown(tester.view.resetPhysicalSize);
       addTearDown(tester.view.resetDevicePixelRatio);
       final service = PokemonService(
         client: MockClient(
-          (_) async => http.Response(
-            fixture(List.generate(30, (i) => 'pokemon-${i + 1}')),
-            200,
-          ),
+          (_) async => http.Response(fixture(allLegendaries), 200),
         ),
       );
       addTearDown(service.dispose);
@@ -146,7 +154,17 @@ void main() {
       final grid = tester.widget<GridView>(find.byType(GridView));
       grid.controller!.jumpTo(grid.controller!.position.maxScrollExtent);
       await tester.pumpAndSettle();
-      expect(find.text('No. 030'), findsOneWidget);
+      expect(find.text('No. 1024'), findsOneWidget);
+      expect(
+        find.text(
+          '${allLegendaries.length} / ${allLegendaries.length} Pokémon',
+        ),
+        findsOneWidget,
+      );
+      await tester.enterText(find.byType(TextField), '#1024');
+      await tester.pumpAndSettle();
+      expect(find.text('TERAPAGOS'), findsOneWidget);
+      expect(find.text('1 / ${allLegendaries.length} Pokémon'), findsOneWidget);
       expect(tester.takeException(), isNull);
     });
   }

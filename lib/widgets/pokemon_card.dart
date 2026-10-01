@@ -27,13 +27,20 @@ class PokemonCard extends StatelessWidget {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(
-                    'No. ${pokemon.number}',
-                    style: const TextStyle(
-                      fontSize: 11,
-                      color: EmeraldTheme.muted,
+                  Expanded(
+                    child: FittedBox(
+                      fit: BoxFit.scaleDown,
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        'No. ${pokemon.number}',
+                        style: const TextStyle(
+                          fontSize: 11,
+                          color: EmeraldTheme.muted,
+                        ),
+                      ),
                     ),
                   ),
+                  const SizedBox(width: 4),
                   const Pokeball(size: 15, muted: true),
                 ],
               ),

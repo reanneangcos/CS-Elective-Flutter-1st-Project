@@ -1,5 +1,5 @@
 name: emerald_pokedex
-description: "An Emerald-inspired Pokédex for the Dart async activity."
+description: "An Emerald-inspired Pokédex of Legendary Pokémon from every generation."
 publish_to: 'none'
 version: 0.1.0+1
 

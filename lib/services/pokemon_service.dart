@@ -19,11 +19,22 @@ class PokemonService {
     this.timeout = const Duration(seconds: 15),
   }) : _client = client ?? http.Client();
 
-  static const limit = 30;
-  static final endpoint = Uri.https('pokeapi.co', '/api/v2/pokemon', {
-    'limit': '$limit',
-    'offset': '0',
-  });
+  static final endpoint = Uri.https('graphql.pokeapi.co', '/v1beta2');
+
+  // Filter species on the server so all generations arrive in one request.
+  // No limit: include every species PokéAPI classifies as Legendary.
+  static const query = '''
+    query LegendaryPokemon {
+      pokemonspecies(
+        where: {is_legendary: {_eq: true}}
+        order_by: {id: asc}
+      ) {
+        id
+        name
+        is_legendary
+      }
+    }
+  ''';
 
   final http.Client _client;
   final Duration timeout;
@@ -34,23 +45,45 @@ class PokemonService {
   Future<List<Pokemon>> fetchPokemon() async {
     if (_cache != null) return _cache!;
     try {
-      final response = await _client.get(endpoint).timeout(timeout);
+      final response = await _client
+          .post(
+            endpoint,
+            headers: {'Content-Type': 'application/json'},
+            body: jsonEncode({'query': query}),
+          )
+          .timeout(timeout);
       if (response.statusCode != 200) {
         throw const PokemonServiceException(
           'The Pokémon lab is unavailable. Please try again.',
         );
       }
       final decoded = jsonDecode(response.body);
-      if (decoded is! Map<String, dynamic> || decoded['results'] is! List) {
-        throw const FormatException('Missing results list.');
+      if (decoded is! Map<String, dynamic>) {
+        throw const FormatException('Invalid response.');
       }
-      final results = decoded['results'] as List;
-      final pokemon = results.take(limit).map((entry) {
-        if (entry is! Map<String, dynamic>) {
-          throw const FormatException('Invalid list entry.');
-        }
-        return Pokemon.fromJson(entry);
-      }).toList()..sort((a, b) => a.id.compareTo(b.id));
+      // GraphQL can report a failed query even with an HTTP 200 response.
+      final errors = decoded['errors'];
+      if (errors != null && (errors is! List || errors.isNotEmpty)) {
+        throw const PokemonServiceException(
+          'The Legendary archive is unavailable. Please try again.',
+        );
+      }
+      final data = decoded['data'];
+      if (data is! Map<String, dynamic> || data['pokemonspecies'] is! List) {
+        throw const FormatException('Missing species list.');
+      }
+      final results = data['pokemonspecies'] as List;
+      final pokemon =
+          results
+              .map((entry) {
+                if (entry is! Map<String, dynamic>) {
+                  throw const FormatException('Invalid list entry.');
+                }
+                return Pokemon.fromJson(entry);
+              })
+              .where((pokemon) => pokemon.isLegendary)
+              .toList()
+            ..sort((a, b) => a.id.compareTo(b.id));
       // Keep empty responses retryable; cache only a populated list.
       if (pokemon.isNotEmpty) _cache = List.unmodifiable(pokemon);
       return List.unmodifiable(pokemon);

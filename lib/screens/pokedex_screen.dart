@@ -123,7 +123,7 @@ class _PokedexScreenState extends State<PokedexScreen> {
                             children: [
                               _toolbar(all.length, ready),
                               Expanded(child: _content(snapshot, all, visible)),
-                              _footer(visible.length, ready),
+                              _footer(visible.length, all.length, ready),
                             ],
                           );
                         },
@@ -133,7 +133,7 @@ class _PokedexScreenState extends State<PokedexScreen> {
                   Padding(
                     padding: const EdgeInsets.symmetric(vertical: 18),
                     child: Text(
-                      'A little adventure, one entry at a time.',
+                      'Every legend has a story.',
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         color: EmeraldTheme.mint.withValues(alpha: .8),
@@ -165,7 +165,7 @@ class _PokedexScreenState extends State<PokedexScreen> {
             const SizedBox(width: 10),
             Expanded(
               child: Text(
-                'POKÉMON INDEX',
+                'LEGENDARY INDEX',
                 style: EmeraldTheme.pixel(12, color: EmeraldTheme.paper),
               ),
             ),
@@ -269,7 +269,7 @@ class _PokedexScreenState extends State<PokedexScreen> {
       return const DexStatePanel(
         title: 'Opening the Pokédex…',
         message:
-            'Connecting to the lab. Your first 30 Pokémon are on their way.',
+            'Connecting to the lab. Gathering Legendary Pokémon from every generation.',
         loading: true,
       );
     }
@@ -287,7 +287,7 @@ class _PokedexScreenState extends State<PokedexScreen> {
     if (all.isEmpty) {
       return DexStatePanel(
         title: 'No entries yet',
-        message: 'The lab returned an empty Pokédex. Try connecting again.',
+        message: 'The lab returned no Legendary Pokémon. Try connecting again.',
         actionLabel: 'RELOAD POKÉDEX',
         onAction: _retry,
       );
@@ -295,7 +295,7 @@ class _PokedexScreenState extends State<PokedexScreen> {
     if (visible.isEmpty) {
       return DexStatePanel(
         title: 'No Pokémon found',
-        message: 'Try another name or a number from 001 to 030.',
+        message: 'Try a Legendary Pokémon’s name or National Pokédex number.',
         actionLabel: 'CLEAR SEARCH',
         onAction: _clearSearch,
       );
@@ -325,7 +325,7 @@ class _PokedexScreenState extends State<PokedexScreen> {
     );
   }
 
-  Widget _footer(int count, bool ready) => Container(
+  Widget _footer(int count, int total, bool ready) => Container(
     padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 13),
     decoration: const BoxDecoration(
       color: Color(0xFFE4EBD2),
@@ -336,7 +336,7 @@ class _PokedexScreenState extends State<PokedexScreen> {
       children: [
         Flexible(
           child: Text(
-            ready ? '$count / 30 Pokémon' : 'Waiting for data…',
+            ready ? '$count / $total Pokémon' : 'Waiting for data…',
             style: const TextStyle(fontSize: 10),
           ),
         ),
