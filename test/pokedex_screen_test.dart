@@ -135,37 +135,51 @@ void main() {
     const Size(390, 844),
     const Size(844, 390),
   ]) {
-    testWidgets('grid scrolls through every Legendary at $size', (
-      tester,
-    ) async {
-      tester.view.physicalSize = size;
-      tester.view.devicePixelRatio = 1;
-      addTearDown(tester.view.resetPhysicalSize);
-      addTearDown(tester.view.resetDevicePixelRatio);
-      final service = PokemonService(
-        client: MockClient(
-          (_) async => http.Response(fixture(allLegendaries), 200),
-        ),
-      );
-      addTearDown(service.dispose);
-      await tester.pumpWidget(app(service));
-      await tester.pumpAndSettle();
-      expect(tester.takeException(), isNull);
-      final grid = tester.widget<GridView>(find.byType(GridView));
-      grid.controller!.jumpTo(grid.controller!.position.maxScrollExtent);
-      await tester.pumpAndSettle();
-      expect(find.text('No. 1024'), findsOneWidget);
-      expect(
-        find.text(
-          '${allLegendaries.length} / ${allLegendaries.length} Pokémon',
-        ),
-        findsOneWidget,
-      );
-      await tester.enterText(find.byType(TextField), '#1024');
-      await tester.pumpAndSettle();
-      expect(find.text('TERAPAGOS'), findsOneWidget);
-      expect(find.text('1 / ${allLegendaries.length} Pokémon'), findsOneWidget);
-      expect(tester.takeException(), isNull);
-    });
+    testWidgets(
+      'grid keeps only 30 Legendaries when scrolling, searching, and sorting at $size',
+      (tester) async {
+        tester.view.physicalSize = size;
+        tester.view.devicePixelRatio = 1;
+        addTearDown(tester.view.resetPhysicalSize);
+        addTearDown(tester.view.resetDevicePixelRatio);
+        final service = PokemonService(
+          client: MockClient(
+            (_) async => http.Response(fixture(allLegendaries), 200),
+          ),
+        );
+        addTearDown(service.dispose);
+        await tester.pumpWidget(app(service));
+        await tester.pumpAndSettle();
+        expect(tester.takeException(), isNull);
+        final grid = tester.widget<GridView>(find.byType(GridView));
+        expect(grid.childrenDelegate.estimatedChildCount, 30);
+        grid.controller!.jumpTo(grid.controller!.position.maxScrollExtent);
+        await tester.pumpAndSettle();
+        expect(find.text('No. 641'), findsOneWidget);
+        expect(find.text('30 / 30 Pokémon'), findsOneWidget);
+        await tester.enterText(find.byType(TextField), '#641');
+        await tester.pumpAndSettle();
+        expect(find.text('TORNADUS'), findsOneWidget);
+        expect(find.text('1 / 30 Pokémon'), findsOneWidget);
+        await tester.enterText(find.byType(TextField), '#642');
+        await tester.pumpAndSettle();
+        expect(find.text('No Pokémon found'), findsOneWidget);
+        expect(find.byType(PokemonCard), findsNothing);
+        expect(find.text('0 / 30 Pokémon'), findsOneWidget);
+        await tester.tap(find.byTooltip('Clear search'));
+        await tester.pumpAndSettle();
+        await tester.tap(find.byTooltip('Sort by name'));
+        await tester.pumpAndSettle();
+        expect(find.text('30 / 30 Pokémon'), findsOneWidget);
+        expect(
+          tester
+              .widget<GridView>(find.byType(GridView))
+              .childrenDelegate
+              .estimatedChildCount,
+          30,
+        );
+        expect(tester.takeException(), isNull);
+      },
+    );
   }
 }

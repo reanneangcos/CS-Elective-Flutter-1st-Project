@@ -65,7 +65,7 @@ class DexHeader extends StatelessWidget {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    'ALL GENERATIONS',
+                    '30 LEGENDARIES',
                     style: EmeraldTheme.pixel(18, color: EmeraldTheme.paper),
                   ),
                 ],

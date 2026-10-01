@@ -19,15 +19,17 @@ class PokemonService {
     this.timeout = const Duration(seconds: 15),
   }) : _client = client ?? http.Client();
 
+  static const limit = 30;
   static final endpoint = Uri.https('graphql.pokeapi.co', '/v1beta2');
 
-  // Filter species on the server so all generations arrive in one request.
-  // No limit: include every species PokéAPI classifies as Legendary.
-  static const query = '''
+  // Request the first 30 Legendary species in National Pokédex order.
+  static const query =
+      '''
     query LegendaryPokemon {
       pokemonspecies(
         where: {is_legendary: {_eq: true}}
         order_by: {id: asc}
+        limit: $limit
       ) {
         id
         name
@@ -84,9 +86,11 @@ class PokemonService {
               .where((pokemon) => pokemon.isLegendary)
               .toList()
             ..sort((a, b) => a.id.compareTo(b.id));
+      // Enforce the cap locally too, even if the API returns extra entries.
+      final limited = List<Pokemon>.unmodifiable(pokemon.take(limit));
       // Keep empty responses retryable; cache only a populated list.
-      if (pokemon.isNotEmpty) _cache = List.unmodifiable(pokemon);
-      return List.unmodifiable(pokemon);
+      if (limited.isNotEmpty) _cache = limited;
+      return limited;
     } on TimeoutException {
       throw const PokemonServiceException(
         'The connection took too long. Please try again.',

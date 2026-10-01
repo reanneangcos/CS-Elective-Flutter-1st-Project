@@ -1,8 +1,8 @@
 # Emerald Pokédex — Legendary Archive
 
-A Flutter Pokédex for the CS Elective 2 async activity. It shows every species that PokéAPI marks as Legendary, across all generations, in an Emerald-inspired interface.
+A Flutter Pokédex for the CS Elective 2 async activity. It shows the first **30 Legendary Pokémon in National Pokédex order** in an Emerald-inspired interface.
 
-The current live query returns **71 Legendary species**. The app reads the total from the response; it has no 30-entry cap or fixed list of IDs. Each species appears once, using its National Pokédex number. Mythical Pokémon and alternate forms do not appear as additional entries.
+The query filters Legendary species, orders them by National Pokédex number, and requests 30 entries. The service also enforces the 30-entry cap locally before caching. With the current species data, the collection runs from **Articuno (#144) to Tornadus (#641)**. Each species appears once. Mythical Pokémon and alternate forms do not appear as additional entries.
 
 ## Run
 
@@ -15,21 +15,17 @@ flutter run -d chrome
 
 For Android, start an emulator or connect a device, then run `flutter run`. Internet permission is included in the main Android manifest.
 
-## Code explanation guide
-
-Read [CODE_GUIDE.md](CODE_GUIDE.md) for the data flow, an explanation of each source file and function, a short presentation script, and answers to common questions.
-
 ## Features
 
-- All Legendary species, with their name, sprite, and National Pokédex number.
-- Search by name or number, including `#384` and four-digit IDs such as `1024`.
+- 30 Legendary species, with their name, sprite, and National Pokédex number.
+- Search within the collection by name or number, including `rayquaza` and `#384`.
 - Toggle between National Pokédex order and alphabetical order.
 - Responsive, scrollable grid with live visible/total counts.
 - Loading, error, empty-response, and no-search-results states with appropriate actions.
 - In-memory caching; typing and sorting do not send additional data requests.
 - Emerald sprites for generations I–III and general PokéAPI sprites for later species.
 
-This edition expands the activity's original first-30 list to all Legendary species. It keeps the model/service/screen/widget structure and the `FutureBuilder` approach. Cards remain a grid without a detail route.
+This edition keeps the activity's 30-entry limit and uses Legendary species. Search and sorting operate on those same 30 entries. The app keeps the model/service/screen/widget structure and the `FutureBuilder` approach. Cards remain a grid without a detail route.
 
 ## Data source
 
@@ -40,6 +36,7 @@ query LegendaryPokemon {
   pokemonspecies(
     where: {is_legendary: {_eq: true}}
     order_by: {id: asc}
+    limit: 30
   ) {
     id
     name
@@ -79,7 +76,6 @@ test/
     pokemon_fixtures.dart
     legendary_species.json
 assets/fonts/
-CODE_GUIDE.md
 ```
 
 ## Checks
@@ -91,7 +87,7 @@ flutter build web --no-web-resources-cdn
 flutter build apk --debug
 ```
 
-Tests use mock HTTP responses and a saved live species response. They cover the complete list, Legendary filtering, caching, validation, HTTP/GraphQL failures, timeout, retry, search, sorting, dynamic counts, disposal, and scrolling on phone and landscape layouts.
+Tests use mock HTTP responses and a saved species response containing more than 30 entries. They verify that the service returns only the first 30 Legendary species even if the API sends extra records, and that scrolling, searching, and sorting keep the same capped collection. They also cover caching, validation, HTTP/GraphQL failures, timeout, retry, dynamic counts, disposal, and phone and landscape layouts.
 
 ## Repository
 

@@ -10,42 +10,45 @@ import 'package:http/testing.dart';
 import 'fixtures/pokemon_fixtures.dart';
 
 void main() {
-  test('loads all Legendary species, sorts IDs, and caches the list', () async {
-    var calls = 0;
-    final service = PokemonService(
-      client: MockClient((request) async {
-        calls++;
-        expect(request.method, 'POST');
-        expect(request.url.toString(), 'https://graphql.pokeapi.co/v1beta2');
-        expect(request.headers['Content-Type'], 'application/json');
-        final query = jsonDecode(request.body)['query'] as String;
-        expect(query, contains('is_legendary: {_eq: true}'));
-        expect(query, isNot(contains('limit:')));
-        return http.Response(fixture(allLegendaries.reversed.toList()), 200);
-      }),
-    );
-    addTearDown(service.dispose);
-    final pokemon = await service.fetchPokemon();
-    expect(pokemon.length, allLegendaries.length);
-    expect(pokemon.length, greaterThan(30));
-    expect(pokemon.first.id, 144);
-    expect(pokemon.last.id, 1024);
-    expect(pokemon.every((pokemon) => pokemon.isLegendary), isTrue);
-    expect(
-      pokemon.map((pokemon) => pokemon.name),
-      containsAll([
-        'mewtwo',
-        'rayquaza',
-        'dialga',
-        'zacian',
-        'koraidon',
-        'terapagos',
-      ]),
-    );
-    expect(() => pokemon.clear(), throwsUnsupportedError);
-    expect(await service.fetchPokemon(), pokemon);
-    expect(calls, 1);
-  });
+  test(
+    'limits an oversized response to the first 30 Legendary species and caches it',
+    () async {
+      var calls = 0;
+      final service = PokemonService(
+        client: MockClient((request) async {
+          calls++;
+          expect(request.method, 'POST');
+          expect(request.url.toString(), 'https://graphql.pokeapi.co/v1beta2');
+          expect(request.headers['Content-Type'], 'application/json');
+          final query = jsonDecode(request.body)['query'] as String;
+          expect(query, contains('is_legendary: {_eq: true}'));
+          expect(query, contains('limit: 30'));
+          return http.Response(
+            fixture([
+              ...allLegendaries.reversed,
+              entry(1, 'bulbasaur', legendary: false),
+              entry(151, 'mew', legendary: false),
+            ]),
+            200,
+          );
+        }),
+      );
+      addTearDown(service.dispose);
+      final pokemon = await service.fetchPokemon();
+      expect(pokemon, hasLength(30));
+      expect(pokemon.first.id, 144);
+      expect(pokemon.last.id, 641);
+      expect(pokemon.every((pokemon) => pokemon.isLegendary), isTrue);
+      expect(
+        pokemon.map((pokemon) => pokemon.name),
+        containsAll(['mewtwo', 'rayquaza', 'dialga', 'tornadus']),
+      );
+      expect(pokemon.any((pokemon) => pokemon.id > 641), isFalse);
+      expect(() => pokemon.clear(), throwsUnsupportedError);
+      expect(await service.fetchPokemon(), pokemon);
+      expect(calls, 1);
+    },
+  );
 
   test('excludes ordinary and Mythical species from the archive', () async {
     final service = PokemonService(

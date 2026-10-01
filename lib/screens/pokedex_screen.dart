@@ -268,8 +268,7 @@ class _PokedexScreenState extends State<PokedexScreen> {
     if (snapshot.connectionState != ConnectionState.done) {
       return const DexStatePanel(
         title: 'Opening the Pokédex…',
-        message:
-            'Connecting to the lab. Gathering Legendary Pokémon from every generation.',
+        message: 'Connecting to the lab. Gathering 30 Legendary Pokémon.',
         loading: true,
       );
     }
@@ -295,7 +294,8 @@ class _PokedexScreenState extends State<PokedexScreen> {
     if (visible.isEmpty) {
       return DexStatePanel(
         title: 'No Pokémon found',
-        message: 'Try a Legendary Pokémon’s name or National Pokédex number.',
+        message:
+            'Try the name or National Pokédex number of a Pokémon in this collection.',
         actionLabel: 'CLEAR SEARCH',
         onAction: _clearSearch,
       );
