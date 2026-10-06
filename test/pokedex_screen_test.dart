@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import 'package:emerald_pokedex/providers/pokemon_provider.dart';
+
 import 'package:emerald_pokedex/screens/pokedex_screen.dart';
 import 'package:emerald_pokedex/services/pokemon_service.dart';
 import 'package:emerald_pokedex/theme/emerald_theme.dart';
@@ -8,12 +10,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
+import 'package:provider/provider.dart';
 
 import 'fixtures/pokemon_fixtures.dart';
 
-Widget app(PokemonService service) => MaterialApp(
-  theme: EmeraldTheme.theme,
-  home: PokedexScreen(service: service),
+Widget app(PokemonService service) => ChangeNotifierProvider(
+  create: (_) => PokemonProvider(service: service)..fetchPokemon(),
+  child: MaterialApp(theme: EmeraldTheme.theme, home: const PokedexScreen()),
 );
 
 void main() {

@@ -44,8 +44,9 @@ class PokemonService {
 
   /// One HTTP response produces one list, so a Future is the correct abstraction.
   /// Successful results are cached for this service's lifetime.
-  Future<List<Pokemon>> fetchPokemon() async {
-    if (_cache != null) return _cache!;
+  Future<List<Pokemon>> fetchPokemon({bool forceRefresh = false}) async {
+    if (!forceRefresh && _cache != null) return _cache!;
+
     try {
       final response = await _client
           .post(
