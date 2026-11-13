@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../models/jersey.dart';
+import '../providers/auth_provider.dart';
 import '../providers/shop_provider.dart';
 import '../widgets/jersey_card.dart';
 import '../widgets/pagination_bar.dart';
@@ -75,6 +76,8 @@ class _ShopScreenState extends State<ShopScreen> {
             onPressed: context.read<ShopProvider>().refresh,
             icon: const Icon(Icons.refresh),
           ),
+          const _AccountMenu(),
+          const SizedBox(width: 8),
         ],
       ),
       floatingActionButton: FloatingActionButton.extended(
@@ -111,6 +114,63 @@ class _ShopScreenState extends State<ShopScreen> {
             ],
           );
         },
+      ),
+    );
+  }
+}
+
+class _AccountMenu extends StatelessWidget {
+  const _AccountMenu();
+
+  @override
+  Widget build(BuildContext context) {
+    final auth = context.watch<AuthProvider>();
+    final theme = Theme.of(context);
+    final avatar = auth.avatarUrl;
+    final initial = auth.displayName.isEmpty ? '?' : auth.displayName[0].toUpperCase();
+
+    return PopupMenuButton<String>(
+      tooltip: 'Account',
+      offset: const Offset(0, 48),
+      onSelected: (value) {
+        if (value == 'signout') auth.signOut();
+      },
+      itemBuilder: (_) => [
+        PopupMenuItem<String>(
+          enabled: false,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(auth.displayName,
+                  style: theme.textTheme.titleSmall
+                      ?.copyWith(color: theme.colorScheme.onSurface)),
+              if (auth.user?.email != null && auth.user!.email != auth.displayName)
+                Text(auth.user!.email!, style: theme.textTheme.bodySmall),
+              const SizedBox(height: 4),
+              Text(
+                auth.provider == 'github' ? 'Signed in with GitHub' : 'Signed in with email',
+                style: theme.textTheme.labelSmall
+                    ?.copyWith(color: theme.colorScheme.primary),
+              ),
+            ],
+          ),
+        ),
+        const PopupMenuDivider(),
+        const PopupMenuItem<String>(
+          value: 'signout',
+          child: ListTile(
+            contentPadding: EdgeInsets.zero,
+            leading: Icon(Icons.logout),
+            title: Text('Sign out'),
+          ),
+        ),
+      ],
+      child: CircleAvatar(
+        radius: 17,
+        backgroundColor: const Color(0xFFF97316),
+        foregroundImage: avatar == null ? null : NetworkImage(avatar),
+        child: Text(initial,
+            style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w800)),
       ),
     );
   }

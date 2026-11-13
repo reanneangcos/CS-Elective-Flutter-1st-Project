@@ -13,6 +13,33 @@ An NBA jersey shop built with **Flutter + Supabase** for the CS Elective 2 *Supa
 
 Jersey images are drawn in code (`CustomPainter`) from each team's colors, so no image uploads are needed.
 
+## Authentication (Supabase Auth activity)
+
+Users have to sign in before they can see the shop. There are two ways to sign in:
+
+- **Email + password**: sign in or create an account ([`lib/screens/auth_screen.dart`](lib/screens/auth_screen.dart))
+- **GitHub**: the additional third-party provider, using `signInWithOAuth(OAuthProvider.github)`
+
+[`lib/providers/auth_provider.dart`](lib/providers/auth_provider.dart) listens to `onAuthStateChange`. `AuthGate` in [`lib/main.dart`](lib/main.dart) shows the sign-in screen or the shop depending on whether someone is signed in. The avatar menu in the shop's top bar shows who is signed in and which provider they used, and has **Sign out**.
+
+### Enabling GitHub sign-in
+
+1. **Create a GitHub OAuth App** at GitHub → Settings → Developer settings → **OAuth Apps → New OAuth App**:
+   - Homepage URL: `http://localhost:3000`
+   - Authorization callback URL: `https://<your-project-ref>.supabase.co/auth/v1/callback`
+
+   Copy the **Client ID**, then click **Generate a new client secret** and copy that too.
+2. **Turn on GitHub in Supabase**: go to Authentication → Sign In / Providers → **GitHub**, enable it, paste the Client ID and secret, and save.
+3. **Allow the app's redirect URLs**: go to Authentication → URL Configuration. Set Site URL to `http://localhost:3000` and add these Redirect URLs:
+   - `http://localhost:3000/**` (web)
+   - `com.courtsidekits.app://login-callback` (Android / iOS / macOS)
+4. Run the web app on the port you registered:
+   ```bash
+   flutter run -d chrome --web-port 3000
+   ```
+
+New email accounts must be confirmed by email unless you turn off **Confirm email** under Authentication → Sign In / Providers → Email. Turning it off makes demos easier.
+
 ## Setup
 
 1. **Create the table + sample data**: in your Supabase project, open **SQL Editor → New query**, paste [`supabase/schema.sql`](supabase/schema.sql), and click **Run**. This adds 27 jerseys (5 pages).

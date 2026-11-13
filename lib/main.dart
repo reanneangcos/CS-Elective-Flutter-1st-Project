@@ -3,7 +3,9 @@ import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'config/supabase_config.dart';
+import 'providers/auth_provider.dart';
 import 'providers/shop_provider.dart';
+import 'screens/auth_screen.dart';
 import 'screens/shop_screen.dart';
 import 'services/jersey_service.dart';
 
@@ -22,10 +24,28 @@ Future<void> main() async {
 
   runApp(
     ChangeNotifierProvider(
-      create: (_) => ShopProvider(JerseyService(Supabase.instance.client))..init(),
-      child: const CourtsideKitsApp(home: ShopScreen()),
+      create: (_) => AuthProvider(Supabase.instance.client.auth),
+      child: const CourtsideKitsApp(home: AuthGate()),
     ),
   );
+}
+
+/// Shows the sign-in screen until a user is signed in (by email or GitHub),
+/// then the shop. Signing out returns to the sign-in screen automatically.
+class AuthGate extends StatelessWidget {
+  const AuthGate({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final userId = context.select<AuthProvider, String?>((a) => a.user?.id);
+    if (userId == null) return const AuthScreen();
+
+    return ChangeNotifierProvider(
+      key: ValueKey(userId),
+      create: (_) => ShopProvider(JerseyService(Supabase.instance.client))..init(),
+      child: const ShopScreen(),
+    );
+  }
 }
 
 class CourtsideKitsApp extends StatelessWidget {
